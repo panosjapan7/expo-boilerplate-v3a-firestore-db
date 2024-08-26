@@ -11,6 +11,10 @@ node_modules/
 dist/
 web-build/
 
+# Firebase
+GoogleService-Info.plist
+google-services.json
+
 # local env files
 .env
 .env*.local
