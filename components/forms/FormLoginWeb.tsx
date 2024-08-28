@@ -1,8 +1,10 @@
 // ./components/forms/FormLoginWeb.tsx
-import { MouseEvent, useContext, useEffect, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import { router } from "expo-router";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
+import { webAuth } from "../../firebase/firebaseConfig";
 import { useGlobalStyles } from "../../styles/stylesheets/globalStyles";
 import { Colors } from "../../styles/colors";
 import "../../styles/css/form.css";
@@ -11,13 +13,11 @@ import {
   validateEmail,
   validatePassword,
 } from "../../hooks/validations";
-import { AuthContext } from "../../contexts/AuthContext";
 import { StatusType } from "../../types/types";
 import InputFormWeb from "../inputs/InputFormWeb";
 import ButtonSubmitFormWeb from "../buttons/ButtonSubmitFormWeb";
 
 const FormLoginWeb = () => {
-  const { setIsLoggedIn } = useContext(AuthContext);
   const { themeHeaderTextColor, themeTextColor } = useGlobalStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,14 +27,22 @@ const FormLoginWeb = () => {
   const [hidePassword, setHidePassword] = useState(true);
   const [status, setStatus] = useState<StatusType>("idle");
 
-  const handleLogin = (e: MouseEvent<HTMLButtonElement>) => {
+  const handleLogin = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setStatus("loading");
-    setIsLoggedIn(true);
-    router.push("/(drawer)/(tabs)/feed");
-    setEmail("");
-    setPassword("");
-    setStatus("idle");
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        webAuth,
+        email,
+        password
+      );
+      console.log("User logged in successfully!");
+      router.replace("/(drawer)/(tabs)/feed");
+    } catch (error: any) {
+      console.log("Error", error.message);
+    } finally {
+      setStatus("idle");
+    }
   };
 
   useDebouncedValidation(
