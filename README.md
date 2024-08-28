@@ -13,7 +13,7 @@
 
 - [x] Create Mobile Development Builds to use React Native Firebase
 - [x] Register
-- [ ] Login
+- [x] Login
 - [ ] Logout
 - [ ] Protected Screens
 - [ ] Forgot/Reset Password
