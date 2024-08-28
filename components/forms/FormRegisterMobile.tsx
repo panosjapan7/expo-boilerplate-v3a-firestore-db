@@ -1,6 +1,8 @@
 // ./components/forms/FormRegisterMobile.tsx
 import { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -8,7 +10,9 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import auth from "@react-native-firebase/auth";
 
+import { StatusType } from "../../types/types";
 import {
   useDebouncedValidation,
   validateEmail,
@@ -22,7 +26,7 @@ import InputPasswordMobile from "../inputs/InputPasswordMobile";
 import ButtonSubmitFormMobile from "../buttons/ButtonSubmitFormMobile";
 
 const FormRegisterMobile = () => {
-  const { globalStyles } = useGlobalStyles();
+  const { globalStyles, themeHeaderTextColor } = useGlobalStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
@@ -33,12 +37,26 @@ const FormRegisterMobile = () => {
   const [hidePassword, setHidePassword] = useState(true);
   const [hideRepeatPassword, setHideRepeatPassword] = useState(true);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [status, setStatus] = useState<StatusType>("idle");
 
   const passwordInputRef = useRef<TextInput>(null);
   const repeatPasswordInputRef = useRef<TextInput>(null);
 
-  const handleRegister = () => {
-    console.log("User registered!");
+  const handleRegister = async () => {
+    setStatus("loading");
+    try {
+      await auth().createUserWithEmailAndPassword(email, password);
+      Alert.alert("Success", "User registered successfully!");
+      console.log("Success! User registered successfully!");
+      setEmail("");
+      setPassword("");
+      setRepeatPassword("");
+    } catch (error: any) {
+      Alert.alert("Error", error.message);
+      console.log(error.message);
+    } finally {
+      setStatus("idle");
+    }
   };
 
   useDebouncedValidation(
@@ -76,58 +94,67 @@ const FormRegisterMobile = () => {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={{ flex: 1 }}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      {status === "loading" ? (
         <View style={globalStyles.container}>
-          {/* Email */}
-          <InputLabelMobile caption="Email " errorMessage={emailErrorMessage} />
-          <InputEmailMobile
-            value={email}
-            setValue={setEmail}
-            goToRef={passwordInputRef}
-          />
-
-          <View style={{ marginVertical: 1 }}></View>
-
-          {/* Password */}
-          <InputLabelMobile
-            caption="Password "
-            errorMessage={passwordErrorMessage}
-          />
-          <InputPasswordMobile
-            value={password}
-            setValue={setPassword}
-            ref={passwordInputRef}
-            goToRef={repeatPasswordInputRef}
-            hidePassword={hidePassword}
-            setHidePassword={setHidePassword}
-            returnKeyType="next"
-          />
-
-          <View style={{ marginVertical: 6 }}></View>
-
-          {/* Repeat Password */}
-          <InputLabelMobile
-            caption="Repeat Password "
-            errorMessage={repeatPasswordErrorMessage}
-          />
-          <InputPasswordMobile
-            value={repeatPassword}
-            setValue={setRepeatPassword}
-            ref={repeatPasswordInputRef}
-            hidePassword={hideRepeatPassword}
-            setHidePassword={setHideRepeatPassword}
-            returnKeyType="done"
-          />
-
-          <View style={{ marginVertical: 7 }}></View>
-
-          <ButtonSubmitFormMobile
-            onPress={handleRegister}
-            isDisabled={isButtonDisabled}
-            buttonText="Register"
-          />
+          <ActivityIndicator color={themeHeaderTextColor} size={"large"} />
         </View>
-      </TouchableWithoutFeedback>
+      ) : (
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={globalStyles.container}>
+            {/* Email */}
+            <InputLabelMobile
+              caption="Email "
+              errorMessage={emailErrorMessage}
+            />
+            <InputEmailMobile
+              value={email}
+              setValue={setEmail}
+              goToRef={passwordInputRef}
+            />
+
+            <View style={{ marginVertical: 1 }}></View>
+
+            {/* Password */}
+            <InputLabelMobile
+              caption="Password "
+              errorMessage={passwordErrorMessage}
+            />
+            <InputPasswordMobile
+              value={password}
+              setValue={setPassword}
+              ref={passwordInputRef}
+              goToRef={repeatPasswordInputRef}
+              hidePassword={hidePassword}
+              setHidePassword={setHidePassword}
+              returnKeyType="next"
+            />
+
+            <View style={{ marginVertical: 6 }}></View>
+
+            {/* Repeat Password */}
+            <InputLabelMobile
+              caption="Repeat Password "
+              errorMessage={repeatPasswordErrorMessage}
+            />
+            <InputPasswordMobile
+              value={repeatPassword}
+              setValue={setRepeatPassword}
+              ref={repeatPasswordInputRef}
+              hidePassword={hideRepeatPassword}
+              setHidePassword={setHideRepeatPassword}
+              returnKeyType="done"
+            />
+
+            <View style={{ marginVertical: 7 }}></View>
+
+            <ButtonSubmitFormMobile
+              onPress={handleRegister}
+              isDisabled={isButtonDisabled}
+              buttonText="Register"
+            />
+          </View>
+        </TouchableWithoutFeedback>
+      )}
     </KeyboardAvoidingView>
   );
 };
