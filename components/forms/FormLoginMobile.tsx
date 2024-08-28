@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -12,6 +13,7 @@ import {
   View,
 } from "react-native";
 import { Link, router } from "expo-router";
+import auth from "@react-native-firebase/auth";
 
 import {
   useDebouncedValidation,
@@ -37,10 +39,21 @@ const FormLoginMobile = () => {
 
   const passwordInputRef = useRef<TextInput>(null);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setStatus("loading");
-    router.replace("/(drawer)/feed");
-    setStatus("idle");
+    try {
+      await auth().signInWithEmailAndPassword(email, password);
+      Alert.alert("Success!", "User logged in successfully");
+      console.log("User logged in successfully");
+      setEmail("");
+      setPassword("");
+      router.replace("/(drawer)/feed");
+    } catch (error: any) {
+      Alert.alert("Error", error.message);
+      console.log(error.message);
+    } finally {
+      setStatus("idle");
+    }
   };
 
   useDebouncedValidation(
