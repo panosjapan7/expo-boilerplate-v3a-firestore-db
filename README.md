@@ -11,7 +11,8 @@
 <details>
 <summary>Firebase Auth</summary>
 
-- [ ] Register
+- [x] Create Mobile Development Builds to use React Native Firebase
+- [x] Register
 - [ ] Login
 - [ ] Logout
 - [ ] Protected Screens
