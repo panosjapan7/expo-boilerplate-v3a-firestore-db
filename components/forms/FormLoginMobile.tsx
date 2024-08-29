@@ -1,5 +1,5 @@
 // ./components/forms/FormLoginMobile.tsx
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -15,6 +15,7 @@ import {
 import { Link, router } from "expo-router";
 import auth from "@react-native-firebase/auth";
 
+import { AuthContext } from "../../contexts/AuthContext";
 import {
   useDebouncedValidation,
   validateEmail,
@@ -28,6 +29,7 @@ import InputLabelMobile from "../inputs/InputLabelMobile";
 import ButtonSubmitFormMobile from "../buttons/ButtonSubmitFormMobile";
 
 const FormLoginMobile = () => {
+  const { setUser } = useContext(AuthContext);
   const { globalStyles, themeHeaderTextColor } = useGlobalStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,7 +44,12 @@ const FormLoginMobile = () => {
   const handleLogin = async () => {
     setStatus("loading");
     try {
-      await auth().signInWithEmailAndPassword(email, password);
+      const userCredential = await auth().signInWithEmailAndPassword(
+        email,
+        password
+      );
+      const user = userCredential.user;
+      setUser(user);
       Alert.alert("Success!", "User logged in successfully");
       console.log("User logged in successfully");
       setEmail("");

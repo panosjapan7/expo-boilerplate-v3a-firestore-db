@@ -1,10 +1,11 @@
 // ./components/forms/FormLoginWeb.tsx
-import { MouseEvent, useEffect, useState } from "react";
+import { MouseEvent, useContext, useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import { router } from "expo-router";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
 import { webAuth } from "../../firebase/firebaseConfig";
+import { AuthContext } from "../../contexts/AuthContext";
 import { useGlobalStyles } from "../../styles/stylesheets/globalStyles";
 import { Colors } from "../../styles/colors";
 import "../../styles/css/form.css";
@@ -18,6 +19,7 @@ import InputFormWeb from "../inputs/InputFormWeb";
 import ButtonSubmitFormWeb from "../buttons/ButtonSubmitFormWeb";
 
 const FormLoginWeb = () => {
+  const { setUser } = useContext(AuthContext);
   const { themeHeaderTextColor, themeTextColor } = useGlobalStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,6 +38,8 @@ const FormLoginWeb = () => {
         email,
         password
       );
+      const user = userCredential.user;
+      setUser(user);
       console.log("User logged in successfully!");
       router.replace("/(drawer)/(tabs)/feed");
     } catch (error: any) {
@@ -51,6 +55,7 @@ const FormLoginWeb = () => {
     setEmailErrorMessage,
     "is invalid"
   );
+
   useDebouncedValidation(
     password,
     validatePassword,

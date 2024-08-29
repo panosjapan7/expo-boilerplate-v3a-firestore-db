@@ -1,7 +1,9 @@
 // ./components/navigation/DrawerMenu.tsx
 import { useContext } from "react";
 import { router } from "expo-router";
+import { signOut } from "firebase/auth";
 
+import { webAuth } from "../../firebase/firebaseConfig";
 import { AuthContext } from "../../contexts/AuthContext";
 import { DrawerMenuType } from "../../types/types";
 import { useGlobalStyles } from "../../styles/stylesheets/globalStyles";
@@ -15,13 +17,14 @@ import IconSettings from "../icons/IconSettings";
 import IconLogout from "../icons/IconLogout";
 
 const DrawerMenu = ({ isDrawerOpen, setIsDrawerOpen }: DrawerMenuType) => {
+  const { user, setUser } = useContext(AuthContext);
   const { themeBackgroundColor, themeHeaderTextColor } = useGlobalStyles();
-  const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
 
-  const handleLogout = (e: React.MouseEvent<HTMLParagraphElement>) => {
+  const handleLogout = async (e: React.MouseEvent<HTMLParagraphElement>) => {
     e.preventDefault();
+    await signOut(webAuth);
+    setUser(null);
     setIsDrawerOpen(!isDrawerOpen);
-    setIsLoggedIn(false);
     router.replace("/");
   };
 
@@ -30,7 +33,7 @@ const DrawerMenu = ({ isDrawerOpen, setIsDrawerOpen }: DrawerMenuType) => {
       className={`drawer-menu ${isDrawerOpen ? "open" : ""}`}
       style={{ backgroundColor: themeBackgroundColor }}
     >
-      {isLoggedIn ? (
+      {user ? (
         <ul className="loggedInmenu">
           <li
             className="menu-item-container"

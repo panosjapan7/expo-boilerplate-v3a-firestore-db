@@ -1,10 +1,16 @@
 // ./client/app/login.web.tsx
-import FormLoginWeb from "../components/forms/FormLoginWeb";
+import useAuthRedirect from "../hooks/useAuthRedirect";
 import "../styles/css/login.css";
 import { useGlobalStyles } from "../styles/stylesheets/globalStyles";
+import FormLoginWeb from "../components/forms/FormLoginWeb";
 
 const Login = () => {
+  const authRedirect = useAuthRedirect();
   const { themeBackgroundColor } = useGlobalStyles();
+
+  if (authRedirect) {
+    return authRedirect;
+  }
 
   return (
     <div

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Slot } from "expo-router";
 
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 import { useGlobalStyles } from "../../styles/stylesheets/globalStyles";
 import "../../styles/css/globals.css";
 import "../../styles/css/root-layout-web.css";
@@ -11,6 +12,12 @@ import NavBar from "../navigation/NavBar";
 const RootLayoutWeb = () => {
   const { themeBackgroundColor } = useGlobalStyles();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const authRedirect = useAuthRedirect();
+
+  if (authRedirect) {
+    return authRedirect;
+  }
 
   return (
     <>

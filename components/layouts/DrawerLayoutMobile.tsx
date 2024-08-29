@@ -1,4 +1,5 @@
 // ./components/layouts/DrawerLayoutMobile.tsx
+import { useContext } from "react";
 import { View } from "react-native";
 import { router, usePathname } from "expo-router";
 import { Drawer } from "expo-router/drawer";
@@ -7,7 +8,9 @@ import {
   DrawerItem,
   DrawerContentComponentProps,
 } from "@react-navigation/drawer";
+import auth from "@react-native-firebase/auth";
 
+import { AuthContext } from "../../contexts/AuthContext";
 import { useThemeContext } from "../../contexts/ThemeContext";
 import { useGlobalStyles } from "../../styles/stylesheets/globalStyles";
 import { Colors } from "../../styles/colors";
@@ -17,9 +20,16 @@ import IconSettings from "../icons/IconSettings";
 import ButtonTheme from "../buttons/ButtonTheme";
 
 const CustomDrawer = (props: DrawerContentComponentProps) => {
+  const { setUser } = useContext(AuthContext);
   const { themeTextColor } = useGlobalStyles();
   const pathname = usePathname();
   const { theme } = useThemeContext();
+
+  const handleLogout = async () => {
+    await auth().signOut();
+    setUser(null);
+    router.replace("/");
+  };
 
   return (
     <DrawerContentScrollView {...props}>
@@ -69,10 +79,7 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
       />
       <DrawerItem
         label={"Log out"}
-        onPress={() => {
-          router.dismissAll();
-          router.replace("/");
-        }}
+        onPress={handleLogout}
         icon={() => (
           <IconLogout
             color={themeTextColor}
