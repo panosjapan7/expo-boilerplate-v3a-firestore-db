@@ -14,8 +14,8 @@
 - [x] Create Mobile Development Builds to use React Native Firebase
 - [x] Register
 - [x] Login
-- [ ] Logout
-- [ ] Protected Screens
+- [x] Logout
+- [x] Protected Screens
 - [ ] Forgot/Reset Password
 - [ ] Email Verification
 - [ ] Delete Account
