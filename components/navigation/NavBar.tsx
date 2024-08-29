@@ -11,12 +11,12 @@ import ButtonTheme from "../buttons/ButtonTheme";
 import IconDrawer from "../icons/IconDrawer";
 
 const NavBar = ({ isDrawerOpen, setIsDrawerOpen }: DrawerMenuType) => {
-  const { isLoggedIn } = useContext(AuthContext);
+  const { user, loading } = useContext(AuthContext);
   const { themeBackgroundColor, themeHeaderTextColor } = useGlobalStyles();
 
   return (
     <nav className="navbar" style={{ backgroundColor: themeBackgroundColor }}>
-      {!isLoggedIn ? (
+      {!loading && !user ? (
         <div className="navbarContents-container">
           <button
             className="icon-drawer"
@@ -63,7 +63,9 @@ const NavBar = ({ isDrawerOpen, setIsDrawerOpen }: DrawerMenuType) => {
             </div>
           </div>
         </div>
-      ) : (
+      ) : null}
+
+      {user && !loading ? (
         <div className="navbarContents-container">
           <div className="iconDrawer-tabLinks-container">
             <button
@@ -102,7 +104,7 @@ const NavBar = ({ isDrawerOpen, setIsDrawerOpen }: DrawerMenuType) => {
 
           <ButtonTheme color={themeHeaderTextColor} size={18} />
         </div>
-      )}
+      ) : null}
     </nav>
   );
 };
