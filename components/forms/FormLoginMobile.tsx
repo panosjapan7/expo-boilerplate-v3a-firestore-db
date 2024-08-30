@@ -1,11 +1,11 @@
 // ./components/forms/FormLoginMobile.tsx
 import { useContext, useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -13,7 +13,7 @@ import {
   View,
 } from "react-native";
 import { Link, router } from "expo-router";
-import auth from "@react-native-firebase/auth";
+import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 
 import { AuthContext } from "../../contexts/AuthContext";
 import {
@@ -27,10 +27,15 @@ import InputEmailMobile from "../inputs/InputEmailMobile";
 import InputPasswordMobile from "../inputs/InputPasswordMobile";
 import InputLabelMobile from "../inputs/InputLabelMobile";
 import ButtonSubmitFormMobile from "../buttons/ButtonSubmitFormMobile";
+import LoadingIndicator from "../indicators/LoadingIndicator";
+import Spacer from "../utils/Spacer";
 
 const FormLoginMobile = () => {
-  const { setUser } = useContext(AuthContext);
-  const { globalStyles, themeHeaderTextColor } = useGlobalStyles();
+  const { user, setUser } = useContext(AuthContext) as {
+    user: FirebaseAuthTypes.User | null;
+    setUser: (user: FirebaseAuthTypes.User | null) => void;
+  };
+  const { globalStyles } = useGlobalStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailErrorMessage, setEmailErrorMessage] = useState("");
@@ -49,6 +54,16 @@ const FormLoginMobile = () => {
         password
       );
       const user = userCredential.user;
+      if (!user.emailVerified) {
+        Alert.alert(
+          "Email not verified",
+          "Please verify your email before logging in."
+        );
+        console.log(
+          "Email not verified. Please verify your email before logging in."
+        );
+        return;
+      }
       setUser(user);
       Alert.alert("Success!", "User logged in successfully");
       console.log("User logged in successfully");
@@ -63,12 +78,34 @@ const FormLoginMobile = () => {
     }
   };
 
+  const handleResendVerification = async () => {
+    setStatus("loading");
+    if (user) {
+      try {
+        await user.sendEmailVerification();
+        Alert.alert(`Verification email sent to ${user.email}`);
+        console.log(`Verification email sent to ${user.email}`);
+      } catch (error: any) {
+        if (error.code === "auth/too-many-requests") {
+          Alert.alert(
+            "Too many requests!",
+            "We've already sent you a verification email.\n \nLook into your SPAM folder in case it went there.\n \nIf you can't find it, try again in 10 minutes and we'll send you another verification email."
+          );
+          return;
+        }
+      } finally {
+        setStatus("idle");
+      }
+    }
+  };
+
   useDebouncedValidation(
     email,
     validateEmail,
     setEmailErrorMessage,
     "is invalid"
   );
+
   useDebouncedValidation(
     password,
     validatePassword,
@@ -87,11 +124,28 @@ const FormLoginMobile = () => {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         {status === "loading" ? (
-          <View style={globalStyles.container}>
-            <ActivityIndicator size={"large"} color={themeHeaderTextColor} />
-          </View>
+          <LoadingIndicator />
         ) : (
           <View style={globalStyles.container}>
+            {user && !user?.emailVerified ? (
+              <View style={{ alignItems: "center" }}>
+                <Text
+                  style={[
+                    globalStyles.textRegular,
+                    { textAlign: "center", lineHeight: 22 },
+                  ]}
+                >
+                  Email address {user?.email} is not verified
+                </Text>
+                <Spacer marginTop={10} />
+                <Pressable onPress={handleResendVerification}>
+                  <Text style={[styles.link, globalStyles.textRegular]}>
+                    Resend Verification Email
+                  </Text>
+                </Pressable>
+                <Spacer marginVertical={20} />
+              </View>
+            ) : null}
             {/* Email */}
             <InputLabelMobile
               caption="Email "
@@ -126,7 +180,7 @@ const FormLoginMobile = () => {
               isDisabled={isButtonDisabled}
               buttonText="Log in"
             />
-
+            <Spacer marginTop={30} />
             <View>
               <Link href="/reset-password" style={styles.link}>
                 <Text style={globalStyles.textRegular}>Forgot Password?</Text>
@@ -142,7 +196,6 @@ export default FormLoginMobile;
 
 const styles = StyleSheet.create({
   link: {
-    marginTop: 30,
     fontSize: 16,
     letterSpacing: 0.5,
     textDecorationLine: "underline",
