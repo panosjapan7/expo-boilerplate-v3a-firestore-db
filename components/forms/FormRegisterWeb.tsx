@@ -2,7 +2,10 @@
 import { MouseEvent, useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import { router } from "expo-router";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
 
 import { webAuth } from "../../firebase/firebaseConfig";
 import { StatusType } from "../../types/types";
@@ -17,6 +20,7 @@ import {
 } from "../../hooks/validations";
 import InputFormWeb from "../inputs/InputFormWeb";
 import ButtonSubmitFormWeb from "../buttons/ButtonSubmitFormWeb";
+import LoadingIndicator from "../indicators/LoadingIndicator";
 
 const FormRegisterWeb = () => {
   const { themeHeaderTextColor, themeTextColor } = useGlobalStyles();
@@ -35,12 +39,15 @@ const FormRegisterWeb = () => {
   const handleRegister = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setStatus("loading");
+
     try {
       const userCredential = await createUserWithEmailAndPassword(
         webAuth,
         email,
         password
       );
+      const user = userCredential.user;
+      await sendEmailVerification(user);
       console.log("Success! User registered successfully!");
       router.replace({
         pathname: "/login",
@@ -90,7 +97,7 @@ const FormRegisterWeb = () => {
   return (
     <>
       {status === "loading" ? (
-        <ActivityIndicator color={themeHeaderTextColor} size={"large"} />
+        <LoadingIndicator />
       ) : (
         <div
           className="form-container"
