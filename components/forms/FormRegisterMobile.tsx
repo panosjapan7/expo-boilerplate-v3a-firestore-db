@@ -1,7 +1,6 @@
 // ./components/forms/FormRegisterMobile.tsx
 import { useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   Keyboard,
   KeyboardAvoidingView,
@@ -24,9 +23,10 @@ import InputEmailMobile from "../inputs/InputEmailMobile";
 import InputLabelMobile from "../inputs/InputLabelMobile";
 import InputPasswordMobile from "../inputs/InputPasswordMobile";
 import ButtonSubmitFormMobile from "../buttons/ButtonSubmitFormMobile";
+import LoadingIndicator from "../indicators/LoadingIndicator";
 
 const FormRegisterMobile = () => {
-  const { globalStyles, themeHeaderTextColor } = useGlobalStyles();
+  const { globalStyles } = useGlobalStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
@@ -45,7 +45,12 @@ const FormRegisterMobile = () => {
   const handleRegister = async () => {
     setStatus("loading");
     try {
-      await auth().createUserWithEmailAndPassword(email, password);
+      const userCredential = await auth().createUserWithEmailAndPassword(
+        email,
+        password
+      );
+      const user = userCredential.user;
+      await user.sendEmailVerification();
       Alert.alert("Success", "User registered successfully!");
       console.log("Success! User registered successfully!");
       setEmail("");
@@ -65,6 +70,7 @@ const FormRegisterMobile = () => {
     setEmailErrorMessage,
     "is invalid"
   );
+
   useDebouncedValidation(
     password,
     validatePassword,
@@ -95,9 +101,7 @@ const FormRegisterMobile = () => {
       style={{ flex: 1 }}
     >
       {status === "loading" ? (
-        <View style={globalStyles.container}>
-          <ActivityIndicator color={themeHeaderTextColor} size={"large"} />
-        </View>
+        <LoadingIndicator />
       ) : (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={globalStyles.container}>
