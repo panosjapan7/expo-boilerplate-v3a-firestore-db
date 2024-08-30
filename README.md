@@ -16,7 +16,7 @@
 - [x] Login
 - [x] Logout
 - [x] Protected Screens
-- [ ] Forgot/Reset Password
+- [x] Forgot/Reset Password
 - [ ] Email Verification
 - [ ] Delete Account
 - [ ] Google Sing in
