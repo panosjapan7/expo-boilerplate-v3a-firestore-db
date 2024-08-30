@@ -17,14 +17,14 @@ const useAuthRedirect = () => {
     if (!loading && isMounted) {
       const isInDrawerOrLowerLevel = segments[0] === "(drawer)";
 
-      // If user is not logged in and is in a protected route, redirect to login
+      // If user is not logged in and is in a protected route, redirect to Home screen
       if (!user && isInDrawerOrLowerLevel) {
-        router.replace("/login");
+        router.replace("/");
         return;
       }
 
-      // If user is logged in and is not in a protected route, redirect to Feed
-      if (user && !isInDrawerOrLowerLevel) {
+      // If user is logged in, has verified email, and is not in a protected route, redirect to Feed
+      if (user && user.emailVerified && !isInDrawerOrLowerLevel) {
         router.replace("/(drawer)/(tabs)/feed");
         return;
       }
