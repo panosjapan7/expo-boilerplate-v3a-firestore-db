@@ -17,7 +17,7 @@
 - [x] Logout
 - [x] Protected Screens
 - [x] Forgot/Reset Password
-- [ ] Email Verification
+- [x] Email Verification
 - [ ] Delete Account
 - [ ] Google Sing in
 - [ ] Magic Email (Passwordless sign-in)

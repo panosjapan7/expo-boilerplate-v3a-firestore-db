@@ -16,7 +16,7 @@ const NavBar = ({ isDrawerOpen, setIsDrawerOpen }: DrawerMenuType) => {
 
   return (
     <nav className="navbar" style={{ backgroundColor: themeBackgroundColor }}>
-      {!loading && !user ? (
+      {(!loading && !user) || (!loading && !user?.emailVerified) ? (
         <div className="navbarContents-container">
           <button
             className="icon-drawer"
@@ -65,7 +65,7 @@ const NavBar = ({ isDrawerOpen, setIsDrawerOpen }: DrawerMenuType) => {
         </div>
       ) : null}
 
-      {user && !loading ? (
+      {user && user.emailVerified && !loading ? (
         <div className="navbarContents-container">
           <div className="iconDrawer-tabLinks-container">
             <button

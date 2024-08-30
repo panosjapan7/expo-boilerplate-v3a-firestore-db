@@ -92,3 +92,32 @@
   color: rgb(18, 142, 18);
   margin-top: 0px;
 }
+
+.verifyEmailMessage-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+}
+
+.verifyEmailMessage {
+  font-size: 0.84rem;
+  max-width: 380px;
+  text-align: center;
+  margin: 0px;
+}
+
+.verifyEmailMessage-link {
+  font-size: 0.8rem;
+  max-width: 380px;
+  text-align: center;
+  cursor: pointer;
+  margin: 0px;
+  margin-top: 8px;
+  margin-bottom: 20px;
+}
+
+.verifyEmailMessage-link:hover {
+  text-decoration: underline;
+}

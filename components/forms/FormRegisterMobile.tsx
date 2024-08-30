@@ -1,7 +1,6 @@
 // ./components/forms/FormRegisterMobile.tsx
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   Keyboard,
   KeyboardAvoidingView,
@@ -10,8 +9,10 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { router } from "expo-router";
 import auth from "@react-native-firebase/auth";
 
+import { AuthContext } from "../../contexts/AuthContext";
 import { StatusType } from "../../types/types";
 import {
   useDebouncedValidation,
@@ -24,9 +25,11 @@ import InputEmailMobile from "../inputs/InputEmailMobile";
 import InputLabelMobile from "../inputs/InputLabelMobile";
 import InputPasswordMobile from "../inputs/InputPasswordMobile";
 import ButtonSubmitFormMobile from "../buttons/ButtonSubmitFormMobile";
+import LoadingIndicator from "../indicators/LoadingIndicator";
 
 const FormRegisterMobile = () => {
-  const { globalStyles, themeHeaderTextColor } = useGlobalStyles();
+  const { setUser } = useContext(AuthContext);
+  const { globalStyles } = useGlobalStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
@@ -45,12 +48,24 @@ const FormRegisterMobile = () => {
   const handleRegister = async () => {
     setStatus("loading");
     try {
-      await auth().createUserWithEmailAndPassword(email, password);
-      Alert.alert("Success", "User registered successfully!");
-      console.log("Success! User registered successfully!");
+      const userCredential = await auth().createUserWithEmailAndPassword(
+        email,
+        password
+      );
+      const user = userCredential.user;
+      await user.sendEmailVerification();
+      setUser(user);
+      Alert.alert(
+        "Registration successful!",
+        `We have sent a verification email to ${user?.email}.`
+      );
+      console.log(
+        `Registration successful! We have sent a verification email to ${user?.email}.`
+      );
       setEmail("");
       setPassword("");
       setRepeatPassword("");
+      router.replace("/login");
     } catch (error: any) {
       Alert.alert("Error", error.message);
       console.log(error.message);
@@ -65,6 +80,7 @@ const FormRegisterMobile = () => {
     setEmailErrorMessage,
     "is invalid"
   );
+
   useDebouncedValidation(
     password,
     validatePassword,
@@ -95,9 +111,7 @@ const FormRegisterMobile = () => {
       style={{ flex: 1 }}
     >
       {status === "loading" ? (
-        <View style={globalStyles.container}>
-          <ActivityIndicator color={themeHeaderTextColor} size={"large"} />
-        </View>
+        <LoadingIndicator />
       ) : (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={globalStyles.container}>

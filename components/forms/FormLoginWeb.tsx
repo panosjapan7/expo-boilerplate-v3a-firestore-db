@@ -1,8 +1,11 @@
 // ./components/forms/FormLoginWeb.tsx
 import { MouseEvent, useContext, useEffect, useState } from "react";
-import { ActivityIndicator } from "react-native";
 import { router } from "expo-router";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  sendEmailVerification,
+  signInWithEmailAndPassword,
+  User,
+} from "firebase/auth";
 
 import { webAuth } from "../../firebase/firebaseConfig";
 import { AuthContext } from "../../contexts/AuthContext";
@@ -17,9 +20,13 @@ import {
 import { StatusType } from "../../types/types";
 import InputFormWeb from "../inputs/InputFormWeb";
 import ButtonSubmitFormWeb from "../buttons/ButtonSubmitFormWeb";
+import LoadingIndicator from "../indicators/LoadingIndicator";
 
 const FormLoginWeb = () => {
-  const { setUser } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext) as {
+    user: User | null;
+    setUser: (user: User | null) => void;
+  };
   const { themeHeaderTextColor, themeTextColor } = useGlobalStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,6 +46,15 @@ const FormLoginWeb = () => {
         password
       );
       const user = userCredential.user;
+      if (!user.emailVerified) {
+        window.alert(
+          "Email not verified. Please verify your email before logging in."
+        );
+        console.log(
+          "Email not verified. Please verify your email before logging in."
+        );
+        return;
+      }
       setUser(user);
       console.log("User logged in successfully!");
       router.replace("/(drawer)/(tabs)/feed");
@@ -46,6 +62,26 @@ const FormLoginWeb = () => {
       console.log("Error", error.message);
     } finally {
       setStatus("idle");
+    }
+  };
+
+  const handleResendVerification = async () => {
+    setStatus("loading");
+    if (user) {
+      try {
+        await sendEmailVerification(user);
+        window.alert(`Verification email sent to ${user.email}`);
+        console.log(`Verification email sent to ${user.email}`);
+      } catch (error: any) {
+        if (error.code === "auth/too-many-requests") {
+          window.alert(
+            "Too many requests!\nWe've already sent you a verification email.\n \nLook into your SPAM folder in case it went there.\n \nIf you can't find it, try again in 10 minutes to receive another verification email."
+          );
+          return;
+        }
+      } finally {
+        setStatus("idle");
+      }
     }
   };
 
@@ -70,7 +106,7 @@ const FormLoginWeb = () => {
   return (
     <>
       {status === "loading" ? (
-        <ActivityIndicator size={"large"} color={themeHeaderTextColor} />
+        <LoadingIndicator />
       ) : (
         <div
           className="form-container"
@@ -88,6 +124,27 @@ const FormLoginWeb = () => {
           >
             Login Screen (web)
           </p>
+          {user && !user.emailVerified ? (
+            <div className="verifyEmailMessage-container">
+              <p
+                className="verifyEmailMessage"
+                style={{ color: themeTextColor }}
+              >
+                Email address {user?.email} is not verified
+              </p>
+              <a
+                className="verifyEmailMessage-link textBold"
+                onClick={handleResendVerification}
+                style={{
+                  color: themeHeaderTextColor,
+                  textDecorationColor: themeHeaderTextColor,
+                }}
+              >
+                Resend Verification Email
+              </a>
+            </div>
+          ) : null}
+
           <InputFormWeb
             label="Email"
             value={email}
