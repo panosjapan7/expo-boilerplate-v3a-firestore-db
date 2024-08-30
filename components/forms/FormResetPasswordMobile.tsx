@@ -1,36 +1,45 @@
 // ./components/forms/FormResetPasswordMobile.tsx
 import { useEffect, useState } from "react";
 import {
+  Alert,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { router } from "expo-router";
+import auth from "@react-native-firebase/auth";
 
+import { StatusType } from "../../types/types";
 import { useDebouncedValidation, validateEmail } from "../../hooks/validations";
 import { useGlobalStyles } from "../../styles/stylesheets/globalStyles";
 import InputEmailMobile from "../inputs/InputEmailMobile";
 import InputLabelMobile from "../inputs/InputLabelMobile";
 import ButtonSubmitFormMobile from "../buttons/ButtonSubmitFormMobile";
-import ModalAlertMobile from "../modals/ModalAlertMobile";
+import LoadingIndicator from "../indicators/LoadingIndicator";
 
 const FormResetPasswordMobile = () => {
-  const { globalStyles } = useGlobalStyles();
+  const { globalStyles, themeHeaderTextColor } = useGlobalStyles();
   const [email, setEmail] = useState("");
-  const [submittedEmail, setSubmittedEmail] = useState("");
   const [emailErrorMessage, setEmailErrorMessage] = useState("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [status, setStatus] = useState<StatusType>("idle");
 
-  const handleResetPassword = () => {
-    console.log("Reset Password email sent!");
-    setSubmittedEmail(email);
-    setEmail("");
-    setTimeout(() => {
-      setIsModalVisible(true);
-      Keyboard.dismiss();
-    }, 0);
+  const handleResetPassword = async () => {
+    setStatus("loading");
+    try {
+      await auth().sendPasswordResetEmail(email);
+      Alert.alert("Success", `Reset Password email sent sent to ${email}`);
+      console.log(`Reset Password email sent sent to ${email}`);
+      setEmail("");
+      router.replace("/login");
+    } catch (error: any) {
+      Alert.alert("Error", error.message);
+      console.log("Error", error.message);
+    } finally {
+      setStatus("idle");
+    }
   };
 
   useDebouncedValidation(
@@ -49,31 +58,30 @@ const FormResetPasswordMobile = () => {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={{ flex: 1 }}
     >
-      <ModalAlertMobile
-        header="Check your email!"
-        paragraph={`We have sent you an email at ${submittedEmail} with instructions to reset your password.`}
-        isModalVisible={isModalVisible}
-        setIsModalVisible={setIsModalVisible}
-        showModalScreenBackground={true}
-      />
+      {status === "loading" ? (
+        <LoadingIndicator />
+      ) : (
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={globalStyles.container}>
+            <InputLabelMobile
+              caption="Email "
+              errorMessage={emailErrorMessage}
+            />
 
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={globalStyles.container}>
-          <InputLabelMobile caption="Email " errorMessage={emailErrorMessage} />
+            <InputEmailMobile
+              value={email}
+              setValue={setEmail}
+              returnKeyType="done"
+            />
 
-          <InputEmailMobile
-            value={email}
-            setValue={setEmail}
-            returnKeyType="done"
-          />
-
-          <ButtonSubmitFormMobile
-            onPress={handleResetPassword}
-            isDisabled={isButtonDisabled}
-            buttonText="Reset Password"
-          />
-        </View>
-      </TouchableWithoutFeedback>
+            <ButtonSubmitFormMobile
+              onPress={handleResetPassword}
+              isDisabled={isButtonDisabled}
+              buttonText="Reset Password"
+            />
+          </View>
+        </TouchableWithoutFeedback>
+      )}
     </KeyboardAvoidingView>
   );
 };
