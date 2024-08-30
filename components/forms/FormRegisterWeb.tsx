@@ -1,6 +1,5 @@
 // ./components/forms/FormRegisterWeb.tsx
-import { MouseEvent, useEffect, useState } from "react";
-import { ActivityIndicator } from "react-native";
+import { MouseEvent, useContext, useEffect, useState } from "react";
 import { router } from "expo-router";
 import {
   createUserWithEmailAndPassword,
@@ -8,6 +7,7 @@ import {
 } from "firebase/auth";
 
 import { webAuth } from "../../firebase/firebaseConfig";
+import { AuthContext } from "../../contexts/AuthContext";
 import { StatusType } from "../../types/types";
 import { useGlobalStyles } from "../../styles/stylesheets/globalStyles";
 import { Colors } from "../../styles/colors";
@@ -23,6 +23,7 @@ import ButtonSubmitFormWeb from "../buttons/ButtonSubmitFormWeb";
 import LoadingIndicator from "../indicators/LoadingIndicator";
 
 const FormRegisterWeb = () => {
+  const { setUser } = useContext(AuthContext);
   const { themeHeaderTextColor, themeTextColor } = useGlobalStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,7 +49,10 @@ const FormRegisterWeb = () => {
       );
       const user = userCredential.user;
       await sendEmailVerification(user);
-      console.log("Success! User registered successfully!");
+      setUser(user);
+      console.log(
+        `Registration successful! We have sent a verification email to ${user?.email}.`
+      );
       router.replace({
         pathname: "/login",
         params: {
