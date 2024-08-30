@@ -33,7 +33,7 @@ const DrawerMenu = ({ isDrawerOpen, setIsDrawerOpen }: DrawerMenuType) => {
       className={`drawer-menu ${isDrawerOpen ? "open" : ""}`}
       style={{ backgroundColor: themeBackgroundColor }}
     >
-      {user ? (
+      {user && user.emailVerified ? (
         <ul className="loggedInmenu">
           <li
             className="menu-item-container"
