@@ -1,5 +1,5 @@
 // ./components/forms/FormRegisterMobile.tsx
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Keyboard,
@@ -9,8 +9,10 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { router } from "expo-router";
 import auth from "@react-native-firebase/auth";
 
+import { AuthContext } from "../../contexts/AuthContext";
 import { StatusType } from "../../types/types";
 import {
   useDebouncedValidation,
@@ -26,6 +28,7 @@ import ButtonSubmitFormMobile from "../buttons/ButtonSubmitFormMobile";
 import LoadingIndicator from "../indicators/LoadingIndicator";
 
 const FormRegisterMobile = () => {
+  const { setUser } = useContext(AuthContext);
   const { globalStyles } = useGlobalStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -51,11 +54,18 @@ const FormRegisterMobile = () => {
       );
       const user = userCredential.user;
       await user.sendEmailVerification();
-      Alert.alert("Success", "User registered successfully!");
-      console.log("Success! User registered successfully!");
+      setUser(user);
+      Alert.alert(
+        "Registration successful!",
+        `We have sent a verification email to ${user?.email}.`
+      );
+      console.log(
+        `Registration successful! We have sent a verification email to ${user?.email}.`
+      );
       setEmail("");
       setPassword("");
       setRepeatPassword("");
+      router.replace("/login");
     } catch (error: any) {
       Alert.alert("Error", error.message);
       console.log(error.message);
