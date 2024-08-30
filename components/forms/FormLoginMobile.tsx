@@ -89,7 +89,7 @@ const FormLoginMobile = () => {
         if (error.code === "auth/too-many-requests") {
           Alert.alert(
             "Too many requests!",
-            "We've already sent you a verification email.\n \nLook into your SPAM folder in case it went there.\n \nIf you can't find it, try again in 10 minutes and we'll send you another verification email."
+            "We've already sent you a verification email.\n \nLook into your SPAM folder in case it went there.\n \nIf you can't find it, try again in 10 minutes to receive another verification email."
           );
           return;
         }
