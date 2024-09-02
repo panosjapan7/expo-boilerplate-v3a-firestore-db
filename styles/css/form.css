@@ -84,6 +84,15 @@
   text-decoration: underline;
 }
 
+.bottomLinksContainer p {
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.bottomLinksContainer p:hover {
+  text-decoration: underline;
+}
+
 .emailSentMessage {
   max-width: 260px;
   width: 100%;

@@ -18,7 +18,7 @@
 - [x] Protected Screens
 - [x] Forgot/Reset Password
 - [x] Email Verification
-- [ ] Delete Account
+- [x] Delete Account
 - [ ] Google Sing in
 - [ ] Magic Email (Passwordless sign-in)
 - [ ] Apple Sing in

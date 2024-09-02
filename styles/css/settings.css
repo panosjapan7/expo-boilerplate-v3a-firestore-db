@@ -24,3 +24,12 @@
   padding-top: 30px;
   padding-bottom: 30px;
 }
+
+.settings-link {
+  cursor: pointer;
+}
+
+.settings-link:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
