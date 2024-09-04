@@ -5,6 +5,8 @@ import {
   sendEmailVerification,
   signInWithEmailAndPassword,
   User,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 
 import { webAuth } from "../../firebase/firebaseConfig";
@@ -20,7 +22,9 @@ import {
 import { StatusType } from "../../types/types";
 import InputFormWeb from "../inputs/InputFormWeb";
 import ButtonSubmitFormWeb from "../buttons/ButtonSubmitFormWeb";
+import ButtonGoogleSignIn from "../buttons/ButtonGoogleSignIn";
 import LoadingIndicator from "../indicators/LoadingIndicator";
+import Spacer from "../utils/Spacer";
 
 const FormLoginWeb = () => {
   const { user, setUser } = useContext(AuthContext) as {
@@ -82,6 +86,22 @@ const FormLoginWeb = () => {
       } finally {
         setStatus("idle");
       }
+    }
+  };
+
+  const signInWithGoogle = async () => {
+    setStatus("loading");
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(webAuth, provider);
+      const user = result.user;
+      setUser(user);
+      console.log("User logged in successfully");
+    } catch (error: any) {
+      window.alert("Error: " + error.message);
+      console.log("Error: ", error.message);
+    } finally {
+      setStatus("idle");
     }
   };
 
@@ -166,6 +186,11 @@ const FormLoginWeb = () => {
             onClick={handleLogin}
             isDisabled={isButtonDisabled}
             caption="Log in"
+          />
+          <Spacer marginTop={14} />
+          <ButtonGoogleSignIn
+            onClick={signInWithGoogle}
+            caption="Sign in with Google"
           />
 
           <div className="bottomLinksContainer">

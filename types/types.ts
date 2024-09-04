@@ -16,6 +16,13 @@ export type IconType = {
   style?: object;
 };
 
+export type ImageType = {
+  tintColor?: string;
+  width?: number;
+  height?: number;
+  style?: object;
+};
+
 export type StatusType = "error" | "idle" | "loading" | "success" | "warning";
 
 export type ThemeType = "light" | "dark";
