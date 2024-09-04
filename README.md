@@ -19,7 +19,7 @@
 - [x] Forgot/Reset Password
 - [x] Email Verification
 - [x] Delete Account
-- [ ] Google Sing in
+- [x] Google Sing in
 - [ ] Magic Email (Passwordless sign-in)
 - [ ] Apple Sing in
 - [ ] Facebook Sing in
