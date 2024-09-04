@@ -6,8 +6,11 @@ import {
   reauthenticateWithCredential,
   deleteUser as deleteFirebaseUser,
   User,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 
+import { webAuth } from "../../firebase/firebaseConfig";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import { AuthContext } from "../../contexts/AuthContext";
 import { StatusType } from "../../types/types";
@@ -27,6 +30,52 @@ const Settings = () => {
   if (authRedirect) {
     return authRedirect;
   }
+
+  const handleDeleteAccount = async () => {
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    if (currentUser) {
+      const isEmailPasswordProvider = currentUser.providerData.some(
+        (provider) => provider.providerId === "password"
+      );
+
+      const isGoogleProvider = currentUser.providerData.some(
+        (provider) => provider.providerId === "google.com"
+      );
+
+      if (isEmailPasswordProvider) {
+        setShowReauthenticationForm(true);
+      } else if (isGoogleProvider) {
+        try {
+          const provider = new GoogleAuthProvider();
+          const result = await signInWithPopup(webAuth, provider);
+          const credential = GoogleAuthProvider.credentialFromResult(result);
+
+          if (!credential) {
+            throw new Error(
+              "Failed to obtain Google credential for reauthentication."
+            );
+          }
+
+          await reauthenticateWithCredential(currentUser, credential);
+
+          // Delete the user after reauthentication
+          await deleteAccount(currentUser);
+        } catch (error: any) {
+          console.error("Reauthentication failed:", error.message);
+          alert("Reauthentication failed. Please try again.");
+        }
+      } else {
+        console.log(
+          "Unsupported provider. Account deletion is not supported for this provider."
+        );
+        alert(
+          "Unsupported provider. Account deletion is not supported for this provider."
+        );
+      }
+    }
+  };
 
   const reauthenticateWithEmailPassword = async (
     email: string,
@@ -77,7 +126,7 @@ const Settings = () => {
             <p style={{ color: themeTextColor }}>Settings Screen (web)</p>
             <p
               className="settings-link textMedium"
-              onClick={() => setShowReauthenticationForm(true)}
+              onClick={handleDeleteAccount}
               style={{ color: themeTextColor }}
             >
               Delete Account

@@ -14,6 +14,10 @@ import {
 } from "react-native";
 import { Link, router } from "expo-router";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+} from "@react-native-google-signin/google-signin";
 
 import { AuthContext } from "../../contexts/AuthContext";
 import {
@@ -45,6 +49,39 @@ const FormLoginMobile = () => {
   const [status, setStatus] = useState<StatusType>("idle");
 
   const passwordInputRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: process.env.EXPO_PUBLIC_GOOGLE_SIGN_IN_WEB_CLIENT_ID,
+    });
+  }, []);
+
+  const signInWithGoogle = async () => {
+    setStatus("loading");
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      const idToken = userInfo.data?.idToken;
+
+      if (!idToken) {
+        throw new Error("No idToken found");
+      }
+
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      const userCredential = await auth().signInWithCredential(
+        googleCredential
+      );
+      const user = userCredential.user;
+      setUser(user);
+      Alert.alert("Success!", "User logged in successfully");
+      console.log("User logged in successfully");
+    } catch (error: any) {
+      Alert.alert("Error!", error.message);
+      console.log("Error: ", error.message);
+    } finally {
+      setStatus("idle");
+    }
+  };
 
   const handleLogin = async () => {
     setStatus("loading");
@@ -179,6 +216,12 @@ const FormLoginMobile = () => {
               onPress={handleLogin}
               isDisabled={isButtonDisabled}
               buttonText="Log in"
+            />
+            <Spacer marginTop={20} />
+            <GoogleSigninButton
+              size={GoogleSigninButton.Size.Wide}
+              color={GoogleSigninButton.Color.Dark}
+              onPress={signInWithGoogle}
             />
             <Spacer marginTop={30} />
             <View>

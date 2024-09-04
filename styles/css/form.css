@@ -71,6 +71,17 @@
   margin: 0.5rem 0;
 }
 
+.form-googleSignInButton {
+  max-width: 260px;
+  width: 100%;
+  cursor: pointer;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
 .bottomLinksContainer {
   margin-top: 20px;
   font-size: 12px;

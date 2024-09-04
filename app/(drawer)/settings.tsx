@@ -2,6 +2,7 @@
 import { useContext, useState } from "react";
 import { Alert, Pressable, Text, View } from "react-native";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import { AuthContext } from "../../contexts/AuthContext";
@@ -40,8 +41,38 @@ const Settings = () => {
                 (provider) => provider.providerId === "password"
               );
 
+              const isGoogleProvider = currentUser.providerData.some(
+                (provider) => provider.providerId === "google.com"
+              );
+
               if (isEmailPasswordProvider) {
                 setShowReauthenticationModal(true);
+              } else if (isGoogleProvider) {
+                // Handle Google Sign-In reauthentication
+                try {
+                  await GoogleSignin.hasPlayServices();
+                  const userInfo = await GoogleSignin.signIn();
+                  const idToken = userInfo.data?.idToken;
+
+                  if (!idToken) {
+                    throw new Error("No idToken found");
+                  }
+
+                  const googleCredential =
+                    auth.GoogleAuthProvider.credential(idToken);
+                  await currentUser.reauthenticateWithCredential(
+                    googleCredential
+                  );
+                  deleteUser(currentUser);
+                } catch (error: any) {
+                  Alert.alert("Reauthentication failed", "Please try again.");
+                  console.error("Reauthentication failed:", error);
+                }
+              } else {
+                Alert.alert(
+                  "Unsupported provider",
+                  "Account deletion is not supported for this provider."
+                );
               }
             }
           },
