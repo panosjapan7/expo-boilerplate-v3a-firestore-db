@@ -19,9 +19,9 @@
 - [x] Forgot/Reset Password
 - [x] Email Verification
 - [x] Delete Account
-- [x] Google Sing in
+- [x] Google Sign-in
 - [x] Magic Email (Passwordless sign-in) -- web app only
-- [ ] Apple Sing in
-- [ ] Facebook Sing in
+- [ ] Apple Sign-in
+- [ ] Facebook Sign-in
 
 </details>
