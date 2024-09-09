@@ -1,6 +1,7 @@
 // ./firebase/firebaseConfig.ts
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
+import "firebase/compat/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_API_KEY,
@@ -17,5 +18,6 @@ if (!firebase.apps.length) {
 }
 
 const auth = firebase.auth();
+const firestore = firebase.firestore();
 
-export { auth as webAuth };
+export { auth as webAuth, firestore as webFirestore };
