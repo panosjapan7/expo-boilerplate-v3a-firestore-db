@@ -20,7 +20,7 @@
 - [x] Email Verification
 - [x] Delete Account
 - [x] Google Sing in
-- [ ] Magic Email (Passwordless sign-in)
+- [x] Magic Email (Passwordless sign-in) -- web app only
 - [ ] Apple Sing in
 - [ ] Facebook Sing in
 
