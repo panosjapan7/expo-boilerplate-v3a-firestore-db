@@ -1,12 +1,24 @@
 <!-- ./README.md -->
 
-# Version 2 — Authentication with React Native Firebase Package (for mobile), Firebase Auth (for web)
+# Version 3 — Database Integration with Firebase Firestore
 
-[expo-boilerplate-v2-authentication](https://github.com/panosjapan7/expo-boilerplate-v2-authentication)
+[expo-boilerplate-v3a-firestore-db](https://github.com/panosjapan7/expo-boilerplate-v3a-firestore-db)
 
 ## TECH STACK
 
 - React Native, TypeScript, Expo v.50+, Expo Router, React Native Firebase Auth (mobile), Firebase Auth (web) StyleSheet, CSS
+
+<details>
+<summary>Firestore Db</summary>
+
+- [ ] Create new Mobile Development Builds to use Firebase Firestore
+- [ ] Setup Firestore Db and Integrate with Project
+- [ ] Save Authorized User to Firestore Db
+- [ ] Role-Based Access Control (RBAC)
+- [ ] Data Fetching and Caching
+- [ ] Firebase Security Best Practices
+
+</details>
 
 <details>
 <summary>Firebase Auth</summary>
