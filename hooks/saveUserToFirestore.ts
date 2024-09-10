@@ -33,9 +33,15 @@ export const saveUserToFirestoreMobile = async (
         lastLogin: firestore.FieldValue.serverTimestamp(),
         role: ["Member"], // Default role
         magicEmailUsed: magicEmailUsed,
-        tenantIds: tenantIds.length ? tenantIds : undefined,
-        primaryTenantId: primaryTenantId ? primaryTenantId : undefined,
       };
+
+      // Add tenant-related fields only if they are provided
+      if (tenantIds.length > 0) {
+        userDetails.tenantIds = tenantIds;
+      }
+      if (primaryTenantId) {
+        userDetails.primaryTenantId = primaryTenantId;
+      }
 
       await userDocRef.set(userDetails);
     } else {
@@ -112,9 +118,16 @@ export const saveUserToFirestoreWeb = async (
         lastLogin: serverTimestamp(),
         role: ["Member"], // Default role
         magicEmailUsed: magicEmailUsed,
-        tenantIds: tenantIds.length ? tenantIds : undefined,
-        primaryTenantId: primaryTenantId ? primaryTenantId : undefined,
       };
+
+      // Add tenant-related fields only if they are provided
+      if (tenantIds.length > 0) {
+        userDetails.tenantIds = tenantIds;
+      }
+      if (primaryTenantId) {
+        userDetails.primaryTenantId = primaryTenantId;
+      }
+
       await userDocRef.set(userDetails);
     } else {
       const existingData = doc.data() as UserDetailsType;
