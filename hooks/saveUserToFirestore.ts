@@ -9,7 +9,9 @@ import { UserDetailsType, AuthProviderType } from "../types/database";
 
 export const saveUserToFirestoreMobile = async (
   user: FirebaseAuthTypes.User,
-  magicEmailUsed = false
+  magicEmailUsed = false,
+  tenantIds: string[] = [],
+  primaryTenantId?: string
 ) => {
   try {
     const userDocRef = firestore().collection("users").doc(user.uid);
@@ -31,6 +33,8 @@ export const saveUserToFirestoreMobile = async (
         lastLogin: firestore.FieldValue.serverTimestamp(),
         role: ["Member"], // Default role
         magicEmailUsed: magicEmailUsed,
+        tenantIds: tenantIds.length ? tenantIds : undefined,
+        primaryTenantId: primaryTenantId ? primaryTenantId : undefined,
       };
 
       await userDocRef.set(userDetails);
@@ -58,6 +62,19 @@ export const saveUserToFirestoreMobile = async (
         });
       }
 
+      // Optionally, update tenant information if provided
+      if (tenantIds.length > 0 && tenantIds !== existingData.tenantIds) {
+        await userDocRef.update({
+          tenantIds: tenantIds,
+        });
+      }
+
+      if (primaryTenantId && primaryTenantId !== existingData.primaryTenantId) {
+        await userDocRef.update({
+          primaryTenantId: primaryTenantId,
+        });
+      }
+
       // Always update the lastLogin timestamp
       await userDocRef.update({
         lastLogin: firestore.FieldValue.serverTimestamp(),
@@ -71,7 +88,9 @@ export const saveUserToFirestoreMobile = async (
 
 export const saveUserToFirestoreWeb = async (
   user: User,
-  magicEmailUsed = false
+  magicEmailUsed = false,
+  tenantIds: string[] = [],
+  primaryTenantId?: string
 ) => {
   try {
     const userDocRef = webFirestore.collection("users").doc(user.uid);
@@ -88,13 +107,13 @@ export const saveUserToFirestoreWeb = async (
         displayName: user.displayName,
         emailVerified: user.emailVerified,
         photoURL: user.photoURL,
-        authProviders: user.providerData.map(
-          (provider) => provider.providerId as AuthProviderType
-        ),
+        authProviders: newAuthProviders,
         createdAt: serverTimestamp(), // Use Firestore server timestamp
         lastLogin: serverTimestamp(),
         role: ["Member"], // Default role
         magicEmailUsed: magicEmailUsed,
+        tenantIds: tenantIds.length ? tenantIds : undefined,
+        primaryTenantId: primaryTenantId ? primaryTenantId : undefined,
       };
       await userDocRef.set(userDetails);
     } else {
@@ -120,6 +139,19 @@ export const saveUserToFirestoreWeb = async (
       if (!existingData.magicEmailUsed && magicEmailUsed) {
         await userDocRef.update({
           magicEmailUsed: true,
+        });
+      }
+
+      // Optionally, update tenant information if provided
+      if (tenantIds.length > 0 && tenantIds !== existingData.tenantIds) {
+        await userDocRef.update({
+          tenantIds: tenantIds,
+        });
+      }
+
+      if (primaryTenantId && primaryTenantId !== existingData.primaryTenantId) {
+        await userDocRef.update({
+          primaryTenantId: primaryTenantId,
         });
       }
 
