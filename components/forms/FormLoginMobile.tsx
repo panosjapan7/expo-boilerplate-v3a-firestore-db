@@ -20,7 +20,6 @@ import {
 } from "@react-native-google-signin/google-signin";
 
 import { AuthContext } from "../../contexts/AuthContext";
-import { saveUserToFirestoreMobile } from "../../hooks/firesbaseHooks";
 import {
   useDebouncedValidation,
   validateEmail,
@@ -74,14 +73,6 @@ const FormLoginMobile = () => {
       );
       const user = userCredential.user;
       setUser(user);
-
-      // Save user to Firestore
-      try {
-        await saveUserToFirestoreMobile(user);
-      } catch (error: any) {
-        console.error("Error saving user: ", error.message);
-      }
-
       Alert.alert("Success!", "User logged in successfully");
       console.log("User logged in successfully");
     } catch (error: any) {
@@ -111,14 +102,6 @@ const FormLoginMobile = () => {
         return;
       }
       setUser(user);
-
-      // Save user to Firestore
-      try {
-        await saveUserToFirestoreMobile(user);
-      } catch (error: any) {
-        console.error("Error saving user: ", error.message);
-      }
-
       Alert.alert("Success!", "User logged in successfully");
       console.log("User logged in successfully");
       setEmail("");

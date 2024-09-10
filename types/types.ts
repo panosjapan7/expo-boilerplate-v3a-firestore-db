@@ -1,6 +1,4 @@
 // ./types/types.ts
-import { Timestamp, FieldValue } from "firebase/firestore";
-
 export type ButtonType = {
   color?: string;
   size?: number;
@@ -32,18 +30,4 @@ export type ThemeType = "light" | "dark";
 export type ThemeContextType = {
   theme: ThemeType;
   toggleTheme: () => void;
-};
-
-export type AuthProviderType = "password" | "google.com";
-export type UserDetailsType = {
-  uid: string;
-  email: string | null;
-  emailVerified: boolean;
-  displayName: string | null;
-  photoURL: string | null;
-  authProviders: AuthProviderType[];
-  createdAt: FieldValue | Timestamp;
-  lastLogin: FieldValue | Timestamp;
-  role: string[];
-  magicEmailUsed?: boolean;
 };
