@@ -11,9 +11,8 @@
 <details>
 <summary>Firestore Db</summary>
 
-- [ ] Create new Mobile Development Builds to use Firebase Firestore
-- [ ] Setup Firestore Db and Integrate with Project
-- [ ] Save Authorized User to Firestore Db
+- [x] Setup Firestore Db and Integrate with Project
+- [x] Save Authorized User to Firestore Db
 - [ ] Role-Based Access Control (RBAC)
 - [ ] Data Fetching and Caching
 - [ ] Firebase Security Best Practices
