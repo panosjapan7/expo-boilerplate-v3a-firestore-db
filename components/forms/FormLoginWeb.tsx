@@ -19,6 +19,7 @@ import {
   validateEmail,
   validatePassword,
 } from "../../hooks/validations";
+import { saveUserToFirestoreWeb } from "../../hooks/saveUserToFirestore";
 import { StatusType } from "../../types/types";
 import InputFormWeb from "../inputs/InputFormWeb";
 import ButtonSubmitFormWeb from "../buttons/ButtonSubmitFormWeb";
@@ -60,7 +61,12 @@ const FormLoginWeb = () => {
         return;
       }
       setUser(user);
-      console.log("User logged in successfully!");
+      try {
+        saveUserToFirestoreWeb(user);
+      } catch (error: any) {
+        console.log("Error: ", error.message);
+      }
+      console.log("User logged in successfully: ", user);
       router.replace("/(drawer)/(tabs)/feed");
     } catch (error: any) {
       console.log("Error", error.message);
@@ -96,6 +102,11 @@ const FormLoginWeb = () => {
       const result = await signInWithPopup(webAuth, provider);
       const user = result.user;
       setUser(user);
+      try {
+        saveUserToFirestoreWeb(user);
+      } catch (error: any) {
+        console.log("Error: ", error.message);
+      }
       console.log("User logged in successfully");
     } catch (error: any) {
       window.alert("Error: " + error.message);

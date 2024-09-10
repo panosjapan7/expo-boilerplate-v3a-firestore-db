@@ -7,6 +7,7 @@ import { webAuth } from "../../firebase/firebaseConfig";
 import { AuthContext } from "../../contexts/AuthContext";
 import { StatusType } from "../../types/types";
 import { useDebouncedValidation, validateEmail } from "../../hooks/validations";
+import { saveUserToFirestoreWeb } from "../../hooks/saveUserToFirestore";
 import { useGlobalStyles } from "../../styles/stylesheets/globalStyles";
 import { Colors } from "../../styles/colors";
 import "../../styles/css/form.css";
@@ -36,7 +37,11 @@ const FormMagicEmailWeb = () => {
             console.log("Successfully signed in!", result);
             const user = result.user as FirebaseUserWeb;
             setUser(user);
-
+            try {
+              saveUserToFirestoreWeb(user, true);
+            } catch (error: any) {
+              console.log("Error: ", error.message);
+            }
             // Remove the email from local storage as it's no longer needed
             window.localStorage.removeItem("emailForSignIn");
           })
