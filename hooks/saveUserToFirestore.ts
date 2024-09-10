@@ -5,7 +5,7 @@ import firestore from "@react-native-firebase/firestore";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 
 import { webFirestore } from "../firebase/firebaseConfig";
-import { UserDetailsType, AuthProviderType } from "../types/types";
+import { UserDetailsType, AuthProviderType } from "../types/database";
 
 export const saveUserToFirestoreMobile = async (
   user: FirebaseAuthTypes.User,
@@ -20,7 +20,7 @@ export const saveUserToFirestoreMobile = async (
     );
 
     if (!doc.exists) {
-      const userDetails = {
+      const userDetails: UserDetailsType = {
         uid: user.uid,
         email: user.email,
         displayName: user.displayName,
@@ -29,7 +29,7 @@ export const saveUserToFirestoreMobile = async (
         authProviders: newAuthProviders,
         createdAt: firestore.FieldValue.serverTimestamp(),
         lastLogin: firestore.FieldValue.serverTimestamp(),
-        role: ["test"], // Default role
+        role: ["Member"], // Default role
         magicEmailUsed: magicEmailUsed,
       };
 
@@ -93,7 +93,7 @@ export const saveUserToFirestoreWeb = async (
         ),
         createdAt: serverTimestamp(), // Use Firestore server timestamp
         lastLogin: serverTimestamp(),
-        role: ["test"], // Default role
+        role: ["Member"], // Default role
         magicEmailUsed: magicEmailUsed,
       };
       await userDocRef.set(userDetails);
