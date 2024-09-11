@@ -8,7 +8,7 @@ import { useGlobalStyles } from "../../../styles/stylesheets/globalStyles";
 
 const Feed = () => {
   const authRedirect = useAuthRedirect();
-  const { user } = useContext(AuthContext);
+  const { userDetails } = useContext(AuthContext);
   const { globalStyles } = useGlobalStyles();
 
   if (authRedirect) {
@@ -19,9 +19,10 @@ const Feed = () => {
     <View style={globalStyles.container}>
       <Text style={globalStyles.textBlack}>Feed Screen</Text>
       <Text style={globalStyles.textMedium}>
-        displayName: {user?.displayName}
+        displayName: {userDetails?.displayName}
       </Text>
-      <Text style={globalStyles.textMedium}>email: {user?.email}</Text>
+      <Text style={globalStyles.textMedium}>email: {userDetails?.email}</Text>
+      <Text style={globalStyles.textMedium}>role: {userDetails?.role}</Text>
     </View>
   );
 };
