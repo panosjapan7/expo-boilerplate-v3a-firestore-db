@@ -13,7 +13,7 @@
 
 - [x] Setup Firestore Db and Integrate with Project
 - [x] Save Authorized User to Firestore Db
-- [ ] Role-Based Access Control (RBAC)
+- [x] Roles, Single & Multi-Tenant Schema
 - [ ] Data Fetching and Caching
 - [ ] Firebase Security Best Practices
 
