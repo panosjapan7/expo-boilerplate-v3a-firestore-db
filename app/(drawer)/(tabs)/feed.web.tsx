@@ -8,7 +8,7 @@ import { useGlobalStyles } from "../../../styles/stylesheets/globalStyles";
 
 const Feed = () => {
   const authRedirect = useAuthRedirect();
-  const { userDetails, loading } = useContext(AuthContext);
+  const { userDetails } = useContext(AuthContext);
   const { themeTextColor } = useGlobalStyles();
 
   if (authRedirect) {
