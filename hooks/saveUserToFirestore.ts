@@ -5,11 +5,13 @@ import firestore from "@react-native-firebase/firestore";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 
 import { webFirestore } from "../firebase/firebaseConfig";
-import { UserDetailsType, AuthProviderType } from "../types/types";
+import { UserDetailsType, AuthProviderType } from "../types/database";
 
 export const saveUserToFirestoreMobile = async (
   user: FirebaseAuthTypes.User,
-  magicEmailUsed = false
+  magicEmailUsed = false,
+  tenantIds: string[] = [],
+  primaryTenantId?: string
 ) => {
   try {
     const userDocRef = firestore().collection("users").doc(user.uid);
@@ -20,7 +22,7 @@ export const saveUserToFirestoreMobile = async (
     );
 
     if (!doc.exists) {
-      const userDetails = {
+      const userDetails: UserDetailsType = {
         uid: user.uid,
         email: user.email,
         displayName: user.displayName,
@@ -29,9 +31,17 @@ export const saveUserToFirestoreMobile = async (
         authProviders: newAuthProviders,
         createdAt: firestore.FieldValue.serverTimestamp(),
         lastLogin: firestore.FieldValue.serverTimestamp(),
-        role: ["test"], // Default role
+        role: ["Member"], // Default role
         magicEmailUsed: magicEmailUsed,
       };
+
+      // Add tenant-related fields only if they are provided
+      if (tenantIds.length > 0) {
+        userDetails.tenantIds = tenantIds;
+      }
+      if (primaryTenantId) {
+        userDetails.primaryTenantId = primaryTenantId;
+      }
 
       await userDocRef.set(userDetails);
     } else {
@@ -58,6 +68,19 @@ export const saveUserToFirestoreMobile = async (
         });
       }
 
+      // Optionally, update tenant information if provided
+      if (tenantIds.length > 0 && tenantIds !== existingData.tenantIds) {
+        await userDocRef.update({
+          tenantIds: tenantIds,
+        });
+      }
+
+      if (primaryTenantId && primaryTenantId !== existingData.primaryTenantId) {
+        await userDocRef.update({
+          primaryTenantId: primaryTenantId,
+        });
+      }
+
       // Always update the lastLogin timestamp
       await userDocRef.update({
         lastLogin: firestore.FieldValue.serverTimestamp(),
@@ -71,7 +94,9 @@ export const saveUserToFirestoreMobile = async (
 
 export const saveUserToFirestoreWeb = async (
   user: User,
-  magicEmailUsed = false
+  magicEmailUsed = false,
+  tenantIds: string[] = [],
+  primaryTenantId?: string
 ) => {
   try {
     const userDocRef = webFirestore.collection("users").doc(user.uid);
@@ -88,14 +113,21 @@ export const saveUserToFirestoreWeb = async (
         displayName: user.displayName,
         emailVerified: user.emailVerified,
         photoURL: user.photoURL,
-        authProviders: user.providerData.map(
-          (provider) => provider.providerId as AuthProviderType
-        ),
+        authProviders: newAuthProviders,
         createdAt: serverTimestamp(), // Use Firestore server timestamp
         lastLogin: serverTimestamp(),
-        role: ["test"], // Default role
+        role: ["Member"], // Default role
         magicEmailUsed: magicEmailUsed,
       };
+
+      // Add tenant-related fields only if they are provided
+      if (tenantIds.length > 0) {
+        userDetails.tenantIds = tenantIds;
+      }
+      if (primaryTenantId) {
+        userDetails.primaryTenantId = primaryTenantId;
+      }
+
       await userDocRef.set(userDetails);
     } else {
       const existingData = doc.data() as UserDetailsType;
@@ -120,6 +152,19 @@ export const saveUserToFirestoreWeb = async (
       if (!existingData.magicEmailUsed && magicEmailUsed) {
         await userDocRef.update({
           magicEmailUsed: true,
+        });
+      }
+
+      // Optionally, update tenant information if provided
+      if (tenantIds.length > 0 && tenantIds !== existingData.tenantIds) {
+        await userDocRef.update({
+          tenantIds: tenantIds,
+        });
+      }
+
+      if (primaryTenantId && primaryTenantId !== existingData.primaryTenantId) {
+        await userDocRef.update({
+          primaryTenantId: primaryTenantId,
         });
       }
 

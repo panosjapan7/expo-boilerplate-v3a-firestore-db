@@ -1,4 +1,5 @@
 // ./firebase/firebaseConfig.ts
+import { Platform } from "react-native";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
@@ -18,6 +19,20 @@ if (!firebase.apps.length) {
 }
 
 const auth = firebase.auth();
-const firestore = firebase.firestore();
+const webFirestore = firebase.firestore();
 
-export { auth as webAuth, firestore as webFirestore };
+if (Platform.OS === "web") {
+  webFirestore.enablePersistence({ synchronizeTabs: true }).catch((error) => {
+    if (error.code === "failed-precondition") {
+      console.error(
+        "Multiple tabs open, persistence can only be enabled in one tab."
+      );
+    } else if (error.code === "unimplemented") {
+      console.error(
+        "The current browser does not support all features required for persistence"
+      );
+    }
+  });
+}
+
+export { auth as webAuth, webFirestore };

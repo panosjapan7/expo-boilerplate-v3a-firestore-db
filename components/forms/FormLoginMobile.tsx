@@ -83,7 +83,6 @@ const FormLoginMobile = () => {
       }
 
       Alert.alert("Success!", "User logged in successfully");
-      console.log("User logged in successfully");
     } catch (error: any) {
       Alert.alert("Error!", error.message);
       console.log("Error: ", error.message);
@@ -120,7 +119,6 @@ const FormLoginMobile = () => {
       }
 
       Alert.alert("Success!", "User logged in successfully");
-      console.log("User logged in successfully");
       setEmail("");
       setPassword("");
       router.replace("/(drawer)/feed");

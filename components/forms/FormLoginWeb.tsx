@@ -66,7 +66,6 @@ const FormLoginWeb = () => {
       } catch (error: any) {
         console.log("Error: ", error.message);
       }
-      console.log("User logged in successfully: ", user);
       router.replace("/(drawer)/(tabs)/feed");
     } catch (error: any) {
       console.log("Error", error.message);
@@ -107,7 +106,6 @@ const FormLoginWeb = () => {
       } catch (error: any) {
         console.log("Error: ", error.message);
       }
-      console.log("User logged in successfully");
     } catch (error: any) {
       window.alert("Error: " + error.message);
       console.log("Error: ", error.message);

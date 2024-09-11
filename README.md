@@ -12,10 +12,9 @@
 <summary>Firestore Db</summary>
 
 - [x] Setup Firestore Db and Integrate with Project
-- [x] Save Authorized User to Firestore Db
-- [ ] Role-Based Access Control (RBAC)
-- [ ] Data Fetching and Caching
-- [ ] Firebase Security Best Practices
+- [x] Save Authenticated User to Firestore Db
+- [x] Roles, Single & Multi-Tenant User Schema
+- [x] Offline Persistence: Get Firestore Data While Offline
 
 </details>
 
