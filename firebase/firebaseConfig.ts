@@ -1,8 +1,20 @@
 // ./firebase/firebaseConfig.ts
 import { Platform } from "react-native";
-import firebase from "firebase/compat/app";
-import "firebase/compat/auth";
-import "firebase/compat/firestore";
+import { getApps, initializeApp } from "firebase/app";
+import {
+  Auth,
+  getAuth,
+  getReactNativePersistence,
+  initializeAuth,
+} from "firebase/auth";
+import {
+  Firestore,
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  CACHE_SIZE_UNLIMITED,
+} from "firebase/firestore";
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_API_KEY,
@@ -14,24 +26,29 @@ const firebaseConfig = {
   measurementId: process.env.EXPO_PUBLIC_MEASUREMENT_ID,
 };
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
+// Initialize Firebase app if it's not already initialized
+const firebaseApp = !getApps().length
+  ? initializeApp(firebaseConfig)
+  : getApps()[0]; // Reuse existing Firebase app
+
+// Initialize Firebase Auth
+let auth: Auth;
+if (Platform.OS === "web") {
+  auth = getAuth(firebaseApp);
+} else {
+  auth = initializeAuth(firebaseApp, {
+    persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+  });
 }
 
-const auth = firebase.auth();
-const webFirestore = firebase.firestore();
-
+// Initialize Firestore
+let webFirestore: Firestore | undefined;
 if (Platform.OS === "web") {
-  webFirestore.enablePersistence({ synchronizeTabs: true }).catch((error) => {
-    if (error.code === "failed-precondition") {
-      console.error(
-        "Multiple tabs open, persistence can only be enabled in one tab."
-      );
-    } else if (error.code === "unimplemented") {
-      console.error(
-        "The current browser does not support all features required for persistence"
-      );
-    }
+  webFirestore = initializeFirestore(firebaseApp, {
+    localCache: persistentLocalCache({
+      tabManager: persistentMultipleTabManager(),
+      cacheSizeBytes: CACHE_SIZE_UNLIMITED,
+    }),
   });
 }
 
