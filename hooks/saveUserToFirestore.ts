@@ -1,11 +1,18 @@
 // ./hooks/saveUserToFirestore.ts
 import { User } from "firebase/auth";
-import { serverTimestamp } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import firestore from "@react-native-firebase/firestore";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 
 import { webFirestore } from "../firebase/firebaseConfig";
-import { UserDetailsType, AuthProviderType } from "../types/database";
+import { UserDetailsType, AuthProviderType } from "../types/databaseTypes";
 
 export const saveUserToFirestoreMobile = async (
   user: FirebaseAuthTypes.User,
@@ -99,14 +106,19 @@ export const saveUserToFirestoreWeb = async (
   primaryTenantId?: string
 ) => {
   try {
-    const userDocRef = webFirestore.collection("users").doc(user.uid);
-    const doc = await userDocRef.get();
+    // Ensure `webFirestore` is defined before using it
+    if (!webFirestore) {
+      throw new Error("Firestore is not initialized for web.");
+    }
+
+    const userDocRef = doc(collection(webFirestore, "users"), user.uid);
+    const docSnap = await getDoc(userDocRef);
 
     const newAuthProviders = user.providerData.map(
       (provider) => provider.providerId as AuthProviderType
     );
 
-    if (!doc.exists) {
+    if (!docSnap.exists()) {
       const userDetails: UserDetailsType = {
         uid: user.uid,
         email: user.email,
@@ -128,9 +140,9 @@ export const saveUserToFirestoreWeb = async (
         userDetails.primaryTenantId = primaryTenantId;
       }
 
-      await userDocRef.set(userDetails);
+      await setDoc(userDocRef, userDetails);
     } else {
-      const existingData = doc.data() as UserDetailsType;
+      const existingData = docSnap.data() as UserDetailsType;
 
       // If user document exists, check for new auth providers
       const uniqueNewProviders = newAuthProviders.filter(
@@ -143,33 +155,40 @@ export const saveUserToFirestoreWeb = async (
           new Set([...existingData.authProviders, ...uniqueNewProviders])
         );
 
-        await userDocRef.update({
+        await updateDoc(userDocRef, {
           authProviders: updatedAuthProviders,
         });
       }
 
       // Only update magicEmailUsed if it was previously false and this login used magic email
       if (!existingData.magicEmailUsed && magicEmailUsed) {
-        await userDocRef.update({
+        await updateDoc(userDocRef, {
           magicEmailUsed: true,
         });
       }
 
       // Optionally, update tenant information if provided
       if (tenantIds.length > 0 && tenantIds !== existingData.tenantIds) {
-        await userDocRef.update({
+        await updateDoc(userDocRef, {
           tenantIds: tenantIds,
         });
       }
 
       if (primaryTenantId && primaryTenantId !== existingData.primaryTenantId) {
-        await userDocRef.update({
+        await updateDoc(userDocRef, {
           primaryTenantId: primaryTenantId,
         });
       }
 
+      // Update displayName if it has changed
+      if (user.displayName && user.displayName !== existingData.displayName) {
+        await updateDoc(userDocRef, {
+          displayName: user.displayName,
+        });
+      }
+
       // Always update lastLogin with server timestamp when the user logs in
-      await userDocRef.update({
+      await updateDoc(userDocRef, {
         lastLogin: serverTimestamp(),
       });
     }
