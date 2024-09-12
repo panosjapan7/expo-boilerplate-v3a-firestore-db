@@ -1,6 +1,4 @@
 // ./types/types.ts
-import { Timestamp, FieldValue } from "firebase/firestore";
-
 export type ButtonType = {
   color?: string;
   size?: number;

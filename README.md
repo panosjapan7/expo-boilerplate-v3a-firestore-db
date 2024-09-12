@@ -12,8 +12,9 @@
 <summary>Firestore Db</summary>
 
 - [x] Setup Firestore Db and Integrate with Project
-- [x] Save Authenticated User to Firestore Db
 - [x] Roles, Single & Multi-Tenant User Schema
+- [x] Save Authenticated User to Firestore Db
+- [x] Get Authenticated User's Firestore Data
 - [x] Offline Persistence: Get Firestore Data While Offline
 
 </details>

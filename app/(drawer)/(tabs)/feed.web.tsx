@@ -1,15 +1,27 @@
 // ./app/(drawer)/(tabs)/feed.web.tsx
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 
 import useAuthRedirect from "../../../hooks/useAuthRedirect";
 import { AuthContext } from "../../../contexts/AuthContext";
 import "../../../styles/css/feed.css";
 import { useGlobalStyles } from "../../../styles/stylesheets/globalStyles";
+import { getUserDetailsFromFirestore } from "../../../hooks/getUserDetailsFromFirestore";
 
 const Feed = () => {
   const authRedirect = useAuthRedirect();
-  const { userDetails } = useContext(AuthContext);
+  const { user, userDetails, setUserDetails } = useContext(AuthContext);
   const { themeTextColor } = useGlobalStyles();
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      if (user) {
+        const details = await getUserDetailsFromFirestore(user.uid);
+        setUserDetails(details);
+      }
+    };
+
+    fetchUserDetails();
+  }, [user, setUserDetails]);
 
   if (authRedirect) {
     return authRedirect;

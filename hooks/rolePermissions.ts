@@ -1,5 +1,5 @@
 // ./hooks/rolePermissions.ts
-import { PermissionType, UserRole } from "../types/database";
+import { PermissionType, UserRole } from "../types/databaseTypes";
 
 // Define role-to-permission mappings
 export const rolePermissions: Record<UserRole, PermissionType[]> = {

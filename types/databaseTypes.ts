@@ -1,4 +1,4 @@
-// ./types/database.ts
+// ./types/databaseTypes.ts
 import { Timestamp, FieldValue } from "firebase/firestore";
 
 export type AuthProviderType = "password" | "google.com";
