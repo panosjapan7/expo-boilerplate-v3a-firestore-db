@@ -5,8 +5,8 @@ import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { onAuthStateChanged, User as FirebaseUserWeb } from "firebase/auth";
 
 import { webAuth } from "../firebase/firebaseConfig";
-import { fetchUserDetailsFromFirestore } from "../hooks/fetchUserDetailsFromFirestore";
-import { UserDetailsType } from "../types/database";
+import { getUserDetailsFromFirestore } from "../hooks/getUserDetailsFromFirestore";
+import { UserDetailsType } from "../types/databaseTypes";
 
 type User = FirebaseUserWeb | FirebaseAuthTypes.User | null;
 
@@ -14,6 +14,7 @@ type AuthContextType = {
   user: User | null;
   setUser: (user: User | null) => void;
   userDetails: UserDetailsType | null;
+  setUserDetails: (userDetails: UserDetailsType | null) => void;
   loading: boolean;
 };
 
@@ -25,6 +26,7 @@ export const AuthContext = createContext<AuthContextType>({
   user: null,
   setUser: () => {},
   userDetails: null,
+  setUserDetails: () => {},
   loading: true,
 });
 
@@ -41,11 +43,13 @@ export const AuthProvider = ({ children }: AuthProviderType) => {
 
       if (authUser) {
         try {
-          const details = await fetchUserDetailsFromFirestore(authUser.uid);
+          const details = await getUserDetailsFromFirestore(authUser.uid);
           setUserDetails(details);
           setUser(authUser);
         } catch (error) {
           console.error("Error fetching user details:", error);
+        } finally {
+          setLoading(false);
         }
       } else {
         setUser(null);
@@ -68,7 +72,9 @@ export const AuthProvider = ({ children }: AuthProviderType) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, userDetails, loading }}>
+    <AuthContext.Provider
+      value={{ user, setUser, userDetails, setUserDetails, loading }}
+    >
       {children}
     </AuthContext.Provider>
   );
