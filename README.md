@@ -14,7 +14,8 @@
 - [x] Setup Firestore Db and Integrate with Project
 - [x] Roles, Single & Multi-Tenant User Schema
 - [x] Save Authenticated User to Firestore Db
-- [x] Get Authenticated User's Firestore Data
+- [x] Get Authenticated User's Firestore User Data
+- [x] Delete Authenticated User's Firestore User Data
 - [x] Offline Persistence: Get Firestore Data While Offline
 
 </details>
