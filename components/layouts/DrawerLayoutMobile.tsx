@@ -1,7 +1,7 @@
 // ./components/layouts/DrawerLayoutMobile.tsx
 import { useContext } from "react";
 import { View } from "react-native";
-import { router, useNavigation, usePathname } from "expo-router";
+import { router, usePathname } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import {
   DrawerContentScrollView,
@@ -21,7 +21,6 @@ import IconSettings from "../icons/IconSettings";
 import ButtonTheme from "../buttons/ButtonTheme";
 
 const CustomDrawer = (props: DrawerContentComponentProps) => {
-  const navigation = useNavigation();
   const { setUser } = useContext(AuthContext);
   const { themeTextColor } = useGlobalStyles();
   const pathname = usePathname();
@@ -35,14 +34,7 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
       // Sign out from Google Sign-In
       await GoogleSignin.signOut();
 
-      // Clear the user context
       setUser(null);
-
-      // Use navigation to reset the stack
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "index" as never }], // Adjust the route name if necessary
-      });
     } catch (error) {
       console.error("Error during logout:", error);
     }
