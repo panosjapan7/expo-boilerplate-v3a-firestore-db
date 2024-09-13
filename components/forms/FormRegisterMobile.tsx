@@ -67,8 +67,18 @@ const FormRegisterMobile = () => {
       setRepeatPassword("");
       router.replace("/login");
     } catch (error: any) {
-      Alert.alert("Error", error.message);
-      console.log(error.message);
+      if (error.code === "auth/email-already-in-use") {
+        // Prompt user to sign in with Google to link accounts
+        console.log(
+          "Email already in use. This email is already associated with a Google account."
+        );
+        Alert.alert(
+          "Email already in use",
+          "This email is already associated with a Google account."
+        );
+      }
+      console.error("Registration error:", error.message);
+      Alert.alert("Registration Error", error.message);
     } finally {
       setStatus("idle");
     }
