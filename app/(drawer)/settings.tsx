@@ -3,6 +3,7 @@ import { useContext, useState } from "react";
 import { Alert, Pressable, Text, View } from "react-native";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import firestore from "@react-native-firebase/firestore";
 
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import { AuthContext } from "../../contexts/AuthContext";
@@ -107,6 +108,7 @@ const Settings = () => {
     setStatus("loading");
 
     try {
+      await firestore().collection("users").doc(currentUser.uid).delete();
       await currentUser.delete();
       setUser(null);
       Alert.alert(
