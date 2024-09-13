@@ -7,8 +7,10 @@ import {
   deleteUser as deleteFirebaseUser,
   User,
   GoogleAuthProvider,
-  signInWithPopup,
 } from "firebase/auth";
+// @ts-ignore
+import { signInWithPopup } from "firebase/auth";
+import { doc, deleteDoc, getFirestore } from "firebase/firestore";
 
 import { webAuth } from "../../firebase/firebaseConfig";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
@@ -104,6 +106,10 @@ const Settings = () => {
     setStatus("loading");
 
     try {
+      const db = getFirestore();
+      const userDocRef = doc(db, "users", currentUser.uid);
+      await deleteDoc(userDocRef);
+
       await deleteFirebaseUser(currentUser);
       setUser(null);
       console.log(
