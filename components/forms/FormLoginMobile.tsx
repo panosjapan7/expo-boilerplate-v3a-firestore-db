@@ -73,7 +73,6 @@ const FormLoginMobile = () => {
         googleCredential
       );
       const user = userCredential.user;
-      setUser(user);
 
       // Save user to Firestore
       try {
@@ -81,6 +80,8 @@ const FormLoginMobile = () => {
       } catch (error: any) {
         console.error("Error saving user: ", error.message);
       }
+
+      setUser(user);
 
       Alert.alert("Success!", "User logged in successfully");
     } catch (error: any) {
