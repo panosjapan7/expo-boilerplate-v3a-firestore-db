@@ -65,6 +65,12 @@ export const useGlobalStyles = () => {
       padding: 20,
       backgroundColor: themeBackgroundColor,
     },
+    // BORDER
+    border: {
+      borderColor: inputBorderColor,
+      borderWidth: inputBorderWidth,
+      borderRadius: inputBorderRadius,
+    },
 
     // BUTTONS
     button: {
