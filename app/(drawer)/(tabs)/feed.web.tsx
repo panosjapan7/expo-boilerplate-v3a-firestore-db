@@ -33,7 +33,7 @@ const Feed = () => {
         <p style={{ color: themeTextColor }}>Feed Screen (web)</p>
         <p>displayName: {userDetails?.displayName}</p>
         <p>email: {userDetails?.email}</p>
-        <p>role: {userDetails?.role}</p>
+        <p>role: {userDetails?.role?.join(", ")}</p>
       </div>
     </div>
   );
