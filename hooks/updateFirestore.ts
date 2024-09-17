@@ -1,5 +1,4 @@
 // ./hooks/updateFirestore.ts
-
 import { Platform } from "react-native";
 import { webFirestore } from "../firebase/firebaseConfig";
 import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
