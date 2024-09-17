@@ -68,7 +68,9 @@ const FormLoginWeb = () => {
       } catch (error: any) {
         console.log("Error: ", error.message);
       }
-      router.replace("/(drawer)/(tabs)/feed");
+      setTimeout(() => {
+        router.replace("/(drawer)/(tabs)/feed");
+      }, 1000);
     } catch (error: any) {
       console.log("Error", error.message);
     } finally {
