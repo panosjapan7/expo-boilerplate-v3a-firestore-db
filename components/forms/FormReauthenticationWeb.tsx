@@ -1,5 +1,7 @@
 // ./components/forms/FormReauthenticationWeb.tsx
 import { useEffect, useState } from "react";
+
+import { reauthenticateWithEmailPassword } from "../../hooks/accountActionsWeb";
 import {
   useDebouncedValidation,
   validateEmail,
@@ -14,13 +16,12 @@ import ButtonSubmitFormWeb from "../buttons/ButtonSubmitFormWeb";
 
 type FormReauthenticationWebType = {
   visible: boolean;
-  onReauthenticate: (email: string, password: string) => Promise<void>;
+  setStatus: (status: StatusType) => void;
   onCancel: () => void;
 };
 
 const FormReauthenticationWeb = ({
-  visible,
-  onReauthenticate,
+  setStatus,
   onCancel,
 }: FormReauthenticationWebType) => {
   const { themeHeaderTextColor, themeTextColor } = useGlobalStyles();
@@ -30,12 +31,11 @@ const FormReauthenticationWeb = ({
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   const [hidePassword, setHidePassword] = useState(true);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-  const [status, setStatus] = useState<StatusType>("idle");
 
   const handleReauthentication = async () => {
     setStatus("loading");
     try {
-      await onReauthenticate(email, password);
+      await reauthenticateWithEmailPassword(email, password);
     } catch (error: any) {
       console.log("Error: ", error);
     } finally {

@@ -28,14 +28,20 @@ import Spacer from "../utils/Spacer";
 
 type FormReauthenticationMobileType = {
   visible: boolean;
-  onReauthenticate: (email: string, password: string) => Promise<void>;
+  reauthenticateWithEmailPassword: (
+    email: string,
+    password: string
+  ) => Promise<void>;
+  setStatus: (status: StatusType) => void;
   onCancel: () => void;
+  setShowReauthenticationModal: (showReauthenticationModal: boolean) => void;
 };
 
 const FormReauthenticationMobile = ({
   visible,
-  onReauthenticate,
+  reauthenticateWithEmailPassword,
   onCancel,
+  setShowReauthenticationModal,
 }: FormReauthenticationMobileType) => {
   const { globalStyles } = useGlobalStyles();
   const [email, setEmail] = useState("");
@@ -50,11 +56,12 @@ const FormReauthenticationMobile = ({
   const handleReauthentication = async () => {
     setStatus("loading");
     try {
-      await onReauthenticate(email, password);
+      await reauthenticateWithEmailPassword(email, password);
     } catch (error: any) {
       console.log("Error: ", error);
     } finally {
       setStatus("idle");
+      setShowReauthenticationModal(false);
     }
   };
 
