@@ -16,6 +16,7 @@ type AuthContextType = {
   userDetails: UserDetailsType | null;
   setUserDetails: (userDetails: UserDetailsType | null) => void;
   loading: boolean;
+  setLoading: (loading: boolean) => void;
 };
 
 type AuthProviderType = {
@@ -28,6 +29,7 @@ export const AuthContext = createContext<AuthContextType>({
   userDetails: null,
   setUserDetails: () => {},
   loading: true,
+  setLoading: () => {},
 });
 
 export const AuthProvider = ({ children }: AuthProviderType) => {
@@ -73,7 +75,14 @@ export const AuthProvider = ({ children }: AuthProviderType) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, setUser, userDetails, setUserDetails, loading }}
+      value={{
+        user,
+        setUser,
+        userDetails,
+        setUserDetails,
+        loading,
+        setLoading,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -34,7 +34,9 @@ const Feed = () => {
         displayName: {userDetails?.displayName}
       </Text>
       <Text style={globalStyles.textMedium}>email: {userDetails?.email}</Text>
-      <Text style={globalStyles.textMedium}>role: {userDetails?.role}</Text>
+      <Text style={globalStyles.textMedium}>
+        role: {userDetails?.role?.join(", ")}
+      </Text>
     </View>
   );
 };
