@@ -34,12 +34,10 @@ import InputLabelMobile from "../inputs/InputLabelMobile";
 import ButtonSubmitFormMobile from "../buttons/ButtonSubmitFormMobile";
 import LoadingIndicator from "../indicators/LoadingIndicator";
 import Spacer from "../utils/Spacer";
+import { getUserDetailsFromFirestore } from "../../hooks/getUserDetailsFromFirestore";
 
 const FormLoginMobile = () => {
-  const { user, setUser } = useContext(AuthContext) as {
-    user: FirebaseAuthTypes.User | null;
-    setUser: (user: FirebaseAuthTypes.User | null) => void;
-  };
+  const { user, setUser, setUserDetails } = useContext(AuthContext);
   const { globalStyles } = useGlobalStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -115,6 +113,9 @@ const FormLoginMobile = () => {
       // Save user to Firestore
       try {
         await saveUserToFirestoreMobile(user);
+
+        const details = await getUserDetailsFromFirestore(user.uid);
+        setUserDetails(details);
       } catch (error: any) {
         console.error("Error saving user: ", error.message);
       }
@@ -135,7 +136,8 @@ const FormLoginMobile = () => {
     setStatus("loading");
     if (user) {
       try {
-        await user.sendEmailVerification();
+        const firebaseUser = user as FirebaseAuthTypes.User;
+        await firebaseUser.sendEmailVerification();
         Alert.alert(`Verification email sent to ${user.email}`);
         console.log(`Verification email sent to ${user.email}`);
       } catch (error: any) {

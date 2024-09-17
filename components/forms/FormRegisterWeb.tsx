@@ -53,13 +53,15 @@ const FormRegisterWeb = () => {
       console.log(
         `Registration successful! We have sent a verification email to ${user?.email}.`
       );
-      router.replace({
-        pathname: "/login",
-        params: {
-          message: `Please verify your email before logging in. Verification email sent to ${email}`,
-          emailToBeVerified: email,
-        },
-      });
+      setTimeout(() => {
+        router.push({
+          pathname: "/login",
+          params: {
+            message: `Please verify your email before logging in. Verification email sent to ${email}`,
+            emailToBeVerified: email,
+          },
+        });
+      }, 1000);
     } catch (error: any) {
       // Check if the email is already in use
       if (error.code === "auth/email-already-in-use") {

@@ -27,12 +27,10 @@ import ButtonSubmitFormWeb from "../buttons/ButtonSubmitFormWeb";
 import ButtonGoogleSignIn from "../buttons/ButtonGoogleSignIn";
 import LoadingIndicator from "../indicators/LoadingIndicator";
 import Spacer from "../utils/Spacer";
+import { getUserDetailsFromFirestore } from "../../hooks/getUserDetailsFromFirestore";
 
 const FormLoginWeb = () => {
-  const { user, setUser } = useContext(AuthContext) as {
-    user: User | null;
-    setUser: (user: User | null) => void;
-  };
+  const { user, setUser, setUserDetails } = useContext(AuthContext);
   const { themeHeaderTextColor, themeTextColor } = useGlobalStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,8 +60,11 @@ const FormLoginWeb = () => {
         return;
       }
       setUser(user);
+
       try {
         saveUserToFirestoreWeb(user);
+        const details = await getUserDetailsFromFirestore(user.uid);
+        setUserDetails(details);
       } catch (error: any) {
         console.log("Error: ", error.message);
       }
@@ -79,7 +80,7 @@ const FormLoginWeb = () => {
     setStatus("loading");
     if (user) {
       try {
-        await sendEmailVerification(user);
+        await sendEmailVerification(user as User);
         window.alert(`Verification email sent to ${user.email}`);
         console.log(`Verification email sent to ${user.email}`);
       } catch (error: any) {
