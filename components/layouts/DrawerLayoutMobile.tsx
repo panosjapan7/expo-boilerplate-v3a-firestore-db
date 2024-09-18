@@ -8,7 +8,6 @@ import {
   DrawerItem,
   DrawerContentComponentProps,
 } from "@react-navigation/drawer";
-import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 import { AuthContext } from "../../contexts/AuthContext";
@@ -19,6 +18,7 @@ import IconFeed from "../icons/IconFeed";
 import IconLogout from "../icons/IconLogout";
 import IconSettings from "../icons/IconSettings";
 import ButtonTheme from "../buttons/ButtonTheme";
+import { FirebaseAuthService } from "../../services/auth/FirebaseAuthService";
 
 const CustomDrawer = (props: DrawerContentComponentProps) => {
   const { setUser } = useContext(AuthContext);
@@ -29,7 +29,7 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
   const handleLogout = async () => {
     try {
       // Sign out from Firebase Auth
-      await auth().signOut();
+      FirebaseAuthService.logout();
 
       // Sign out from Google Sign-In
       await GoogleSignin.signOut();

@@ -1,9 +1,7 @@
 // ./components/navigation/DrawerMenu.tsx
 import { useContext } from "react";
 import { router } from "expo-router";
-import { signOut } from "firebase/auth";
 
-import { webAuth } from "../../firebase/firebaseConfig";
 import { AuthContext } from "../../contexts/AuthContext";
 import { DrawerMenuType } from "../../types/types";
 import { useGlobalStyles } from "../../styles/stylesheets/globalStyles";
@@ -16,16 +14,22 @@ import IconProfile from "../icons/IconProfile";
 import IconSettings from "../icons/IconSettings";
 import IconLogout from "../icons/IconLogout";
 
+import { FirebaseAuthService } from "../../services/auth/FirebaseAuthService";
+
 const DrawerMenu = ({ isDrawerOpen, setIsDrawerOpen }: DrawerMenuType) => {
   const { user, setUser } = useContext(AuthContext);
   const { themeBackgroundColor, themeHeaderTextColor } = useGlobalStyles();
 
   const handleLogout = async (e: React.MouseEvent<HTMLParagraphElement>) => {
     e.preventDefault();
-    await signOut(webAuth);
-    setUser(null);
-    setIsDrawerOpen(!isDrawerOpen);
-    router.replace("/");
+    try {
+      await FirebaseAuthService.logout();
+      setUser(null);
+      setIsDrawerOpen(!isDrawerOpen);
+      router.replace("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (

@@ -20,7 +20,8 @@ import {
 } from "@react-native-google-signin/google-signin";
 
 import { AuthContext } from "../../contexts/AuthContext";
-import { saveUserToFirestoreMobile } from "../../hooks/saveUserToFirestore";
+import { FirebaseFirestoreService } from "../../services/firestore/FirebaseFirestoreService";
+import { FirebaseAuthService } from "../../services/auth/FirebaseAuthService";
 import {
   useDebouncedValidation,
   validateEmail,
@@ -34,7 +35,6 @@ import InputLabelMobile from "../inputs/InputLabelMobile";
 import ButtonSubmitFormMobile from "../buttons/ButtonSubmitFormMobile";
 import LoadingIndicator from "../indicators/LoadingIndicator";
 import Spacer from "../utils/Spacer";
-import { getUserDetailsFromFirestore } from "../../hooks/getUserDetailsFromFirestore";
 
 const FormLoginMobile = () => {
   const { user, setUser, setUserDetails } = useContext(AuthContext);
@@ -74,7 +74,7 @@ const FormLoginMobile = () => {
 
       // Save user to Firestore
       try {
-        await saveUserToFirestoreMobile(user);
+        await FirebaseFirestoreService.saveUserToFirestoreMobile(user);
       } catch (error: any) {
         console.error("Error saving user: ", error.message);
       }
@@ -93,12 +93,8 @@ const FormLoginMobile = () => {
   const handleLogin = async () => {
     setStatus("loading");
     try {
-      const userCredential = await auth().signInWithEmailAndPassword(
-        email,
-        password
-      );
-      const user = userCredential.user;
-      if (!user.emailVerified) {
+      const userCredential = await FirebaseAuthService.login(email, password);
+      if (!userCredential.emailVerified) {
         Alert.alert(
           "Email not verified",
           "Please verify your email before logging in."
@@ -112,9 +108,14 @@ const FormLoginMobile = () => {
 
       // Save user to Firestore
       try {
-        await saveUserToFirestoreMobile(user);
+        await FirebaseFirestoreService.saveUserToFirestoreMobile(
+          userCredential as FirebaseAuthTypes.User
+        );
 
-        const details = await getUserDetailsFromFirestore(user.uid);
+        const details =
+          await FirebaseFirestoreService.getUserDetailsFromFirestore(
+            userCredential.uid
+          );
         setUserDetails(details);
       } catch (error: any) {
         console.error("Error saving user: ", error.message);

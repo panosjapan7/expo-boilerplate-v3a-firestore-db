@@ -1,12 +1,7 @@
 // ./components/forms/FormLoginWeb.tsx
 import { MouseEvent, useContext, useEffect, useState } from "react";
 import { router } from "expo-router";
-import {
-  sendEmailVerification,
-  signInWithEmailAndPassword,
-  User,
-  GoogleAuthProvider,
-} from "firebase/auth";
+import { sendEmailVerification, User, GoogleAuthProvider } from "firebase/auth";
 // @ts-ignore
 import { signInWithPopup } from "firebase/auth";
 
@@ -20,14 +15,14 @@ import {
   validateEmail,
   validatePassword,
 } from "../../hooks/validations";
-import { saveUserToFirestoreWeb } from "../../hooks/saveUserToFirestore";
 import { StatusType } from "../../types/types";
 import InputFormWeb from "../inputs/InputFormWeb";
 import ButtonSubmitFormWeb from "../buttons/ButtonSubmitFormWeb";
 import ButtonGoogleSignIn from "../buttons/ButtonGoogleSignIn";
 import LoadingIndicator from "../indicators/LoadingIndicator";
 import Spacer from "../utils/Spacer";
-import { getUserDetailsFromFirestore } from "../../hooks/getUserDetailsFromFirestore";
+import { FirebaseAuthService } from "../../services/auth/FirebaseAuthService";
+import { FirebaseFirestoreService } from "../../services/firestore/FirebaseFirestoreService";
 
 const FormLoginWeb = () => {
   const { user, setUser, setUserDetails } = useContext(AuthContext);
@@ -44,13 +39,9 @@ const FormLoginWeb = () => {
     e.preventDefault();
     setStatus("loading");
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        webAuth,
-        email,
-        password
-      );
-      const user = userCredential.user;
-      if (!user.emailVerified) {
+      const userCredential = await FirebaseAuthService.login(email, password);
+
+      if (!userCredential.emailVerified) {
         window.alert(
           "Email not verified. Please verify your email before logging in."
         );
@@ -59,16 +50,21 @@ const FormLoginWeb = () => {
         );
         return;
       }
-      setUser(user);
+      setUser(userCredential);
 
       try {
-        saveUserToFirestoreWeb(user);
-        const details = await getUserDetailsFromFirestore(user.uid);
+        FirebaseFirestoreService.saveUserToFirestoreWeb(userCredential as User);
+        const details =
+          await FirebaseFirestoreService.getUserDetailsFromFirestore(
+            userCredential.uid
+          );
         setUserDetails(details);
       } catch (error: any) {
         console.log("Error: ", error.message);
       }
-      router.replace("/(drawer)/(tabs)/feed");
+      setTimeout(() => {
+        router.replace("/(drawer)/(tabs)/feed");
+      }, 1000);
     } catch (error: any) {
       console.log("Error", error.message);
     } finally {
@@ -104,7 +100,7 @@ const FormLoginWeb = () => {
       const user = result.user;
       setUser(user);
       try {
-        saveUserToFirestoreWeb(user);
+        FirebaseFirestoreService.saveUserToFirestoreWeb(user);
       } catch (error: any) {
         console.log("Error: ", error.message);
       }

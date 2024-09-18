@@ -10,7 +10,8 @@ import {
   View,
 } from "react-native";
 import { router } from "expo-router";
-import auth from "@react-native-firebase/auth";
+import { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import { FirebaseAuthService } from "../../services/auth/FirebaseAuthService";
 
 import { AuthContext } from "../../contexts/AuthContext";
 import { StatusType } from "../../types/types";
@@ -48,11 +49,10 @@ const FormRegisterMobile = () => {
   const handleRegister = async () => {
     setStatus("loading");
     try {
-      const userCredential = await auth().createUserWithEmailAndPassword(
+      const user = (await FirebaseAuthService.register(
         email,
         password
-      );
-      const user = userCredential.user;
+      )) as FirebaseAuthTypes.User;
       await user.sendEmailVerification();
       setUser(user);
       Alert.alert(

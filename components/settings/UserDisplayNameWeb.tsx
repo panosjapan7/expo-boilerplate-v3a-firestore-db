@@ -4,7 +4,7 @@ import { useContext, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useGlobalStyles } from "../../styles/stylesheets/globalStyles";
 import { updateFirestore } from "../../hooks/updateFirestore";
-import { getUserDetailsFromFirestore } from "../../hooks/getUserDetailsFromFirestore";
+import { FirebaseFirestoreService } from "../../services/firestore/FirebaseFirestoreService";
 
 const UserDisplayNameWeb = ({
   setStatus,
@@ -27,7 +27,8 @@ const UserDisplayNameWeb = ({
           field: Object.keys(newValue)[0],
           value: Object.values(newValue)[0],
         });
-        const updatedDetails = await getUserDetailsFromFirestore(user.uid);
+        const updatedDetails =
+          await FirebaseFirestoreService.getUserDetailsFromFirestore(user.uid);
         setUserDetails(updatedDetails);
       } catch (error) {
         console.error("Failed to update Firestore field:", error);

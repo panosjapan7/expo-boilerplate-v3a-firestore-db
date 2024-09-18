@@ -1,12 +1,9 @@
 // ./components/forms/FormRegisterWeb.tsx
 import { MouseEvent, useContext, useEffect, useState } from "react";
 import { router } from "expo-router";
-import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-} from "firebase/auth";
+import { sendEmailVerification, User } from "firebase/auth";
 
-import { webAuth } from "../../firebase/firebaseConfig";
+import { FirebaseAuthService } from "../../services/auth/FirebaseAuthService";
 import { AuthContext } from "../../contexts/AuthContext";
 import { StatusType } from "../../types/types";
 import { useGlobalStyles } from "../../styles/stylesheets/globalStyles";
@@ -42,12 +39,10 @@ const FormRegisterWeb = () => {
     setStatus("loading");
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        webAuth,
+      const user = (await FirebaseAuthService.register(
         email,
         password
-      );
-      const user = userCredential.user;
+      )) as User;
       await sendEmailVerification(user);
       setUser(user);
       console.log(

@@ -1,12 +1,12 @@
 // ./components/settings/UserRolesMobile.tsx
 import { useContext, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
-import { getUserDetailsFromFirestore } from "../../hooks/getUserDetailsFromFirestore";
 import { useGlobalStyles } from "../../styles/stylesheets/globalStyles";
 import { updateFirestore } from "../../hooks/updateFirestore";
 import { Pressable, Text, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import Spacer from "../utils/Spacer";
+import { FirebaseFirestoreService } from "../../services/firestore/FirebaseFirestoreService";
 
 const UserRolesMobile = ({
   setStatus,
@@ -30,7 +30,8 @@ const UserRolesMobile = ({
           value: role,
           action: action,
         });
-        const updatedDetails = await getUserDetailsFromFirestore(user.uid);
+        const updatedDetails =
+          await FirebaseFirestoreService.getUserDetailsFromFirestore(user.uid);
         setUserDetails(updatedDetails);
         setSelectedRole("");
       } catch (error: any) {

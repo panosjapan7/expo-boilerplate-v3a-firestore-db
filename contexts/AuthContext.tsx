@@ -5,8 +5,8 @@ import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { onAuthStateChanged, User as FirebaseUserWeb } from "firebase/auth";
 
 import { webAuth } from "../firebase/firebaseConfig";
-import { getUserDetailsFromFirestore } from "../hooks/getUserDetailsFromFirestore";
 import { UserDetailsType } from "../types/databaseTypes";
+import { FirebaseFirestoreService } from "../services/firestore/FirebaseFirestoreService";
 
 type User = FirebaseUserWeb | FirebaseAuthTypes.User | null;
 
@@ -45,7 +45,10 @@ export const AuthProvider = ({ children }: AuthProviderType) => {
 
       if (authUser) {
         try {
-          const details = await getUserDetailsFromFirestore(authUser.uid);
+          const details =
+            await FirebaseFirestoreService.getUserDetailsFromFirestore(
+              authUser.uid
+            );
           setUserDetails(details);
           setUser(authUser);
         } catch (error) {

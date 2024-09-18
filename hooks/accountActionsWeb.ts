@@ -9,7 +9,7 @@ import {
 import { signInWithPopup } from "firebase/auth";
 
 import { webAuth } from "../firebase/firebaseConfig";
-import { deleteFirebaseUser } from "./deleteFirebaseUser";
+import { FirebaseFirestoreService } from "../services/firestore/FirebaseFirestoreService";
 
 export const handleDeleteAccount = async (
   setShowReauthenticationForm: (showReauthenticationForm: boolean) => void
@@ -43,7 +43,7 @@ export const handleDeleteAccount = async (
         await reauthenticateWithCredential(currentUser, credential);
 
         // Delete the user after reauthentication
-        await deleteFirebaseUser(currentUser);
+        await FirebaseFirestoreService.deleteFirebaseUser(currentUser);
       } catch (error: any) {
         console.error("Reauthentication failed:", error.message);
         alert("Reauthentication failed. Please try again.");
@@ -72,7 +72,7 @@ export const reauthenticateWithEmailPassword = async (
     if (currentUser && email && password) {
       const credential = EmailAuthProvider.credential(email, password);
       await reauthenticateWithCredential(currentUser, credential);
-      await deleteFirebaseUser(currentUser);
+      await FirebaseFirestoreService.deleteFirebaseUser(currentUser);
     }
   } catch (error: any) {
     console.error("Reauthentication failed:", error);
