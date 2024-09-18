@@ -2,11 +2,8 @@
 import { Alert, Platform } from "react-native";
 import {
   deleteUser as deleteWebUser,
-  EmailAuthProvider,
   User as FirebaseUserWeb,
-  getAuth,
 } from "firebase/auth";
-import auth from "@react-native-firebase/auth";
 import {
   collection,
   deleteDoc,
@@ -18,10 +15,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import firestore from "@react-native-firebase/firestore";
-import {
-  FirebaseAuthTypes,
-  reauthenticateWithCredential as reauthenticateWithCredentialWeb,
-} from "@react-native-firebase/auth";
+import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 
 import { webFirestore } from "../../firebase/firebaseConfig";
 import { AuthProviderType, UserDetailsType } from "../../types/databaseTypes";
