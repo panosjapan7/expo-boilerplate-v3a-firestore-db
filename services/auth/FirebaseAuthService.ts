@@ -2,11 +2,9 @@
 import { Platform } from "react-native";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import {
-  getAuth,
   signInWithEmailAndPassword as webSignInWithEmailAndPassword,
   createUserWithEmailAndPassword as webCreateUserWithEmailAndPassword,
   signOut as webSignOut,
-  onAuthStateChanged as webOnAuthStateChanged,
   User as FirebaseUserWeb,
 } from "firebase/auth";
 import { webAuth } from "../../firebase/firebaseConfig";
