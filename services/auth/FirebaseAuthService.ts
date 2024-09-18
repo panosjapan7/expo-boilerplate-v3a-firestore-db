@@ -49,13 +49,13 @@ const register = async (email: string, password: string): Promise<User> => {
       email,
       password
     );
-    return mapFirebaseUserToUser(userCredential.user);
+    return userCredential.user;
   } else {
     const userCredential = await auth().createUserWithEmailAndPassword(
       email,
       password
     );
-    return mapFirebaseUserToUser(userCredential.user);
+    return userCredential.user;
   }
 };
 
