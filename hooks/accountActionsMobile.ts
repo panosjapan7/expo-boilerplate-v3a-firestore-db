@@ -2,8 +2,7 @@
 import { Alert } from "react-native";
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-
-import { deleteFirebaseUser } from "./deleteFirebaseUser";
+import { FirebaseFirestoreService } from "../services/firestore/FirebaseFirestoreService";
 
 export const handleDeleteAccount = async (
   setShowReauthenticationModal: (setShowReauthenticationModal: boolean) => void
@@ -46,7 +45,7 @@ export const handleDeleteAccount = async (
                 await currentUser.reauthenticateWithCredential(
                   googleCredential
                 );
-                await deleteFirebaseUser(currentUser);
+                await FirebaseFirestoreService.deleteFirebaseUser(currentUser);
               } catch (error: any) {
                 Alert.alert("Reauthentication failed", "Please try again.");
                 console.error("Reauthentication failed:", error);
@@ -73,7 +72,7 @@ export const reauthenticateWithEmailPassword = async (
     if (currentUser && email && password) {
       const credential = auth.EmailAuthProvider.credential(email, password);
       await currentUser.reauthenticateWithCredential(credential);
-      deleteFirebaseUser(currentUser);
+      FirebaseFirestoreService.deleteFirebaseUser(currentUser);
     }
   } catch (error: any) {
     Alert.alert("Reauthentication failed", "Please try again.");
