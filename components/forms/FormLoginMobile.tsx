@@ -94,7 +94,6 @@ const FormLoginMobile = () => {
     setStatus("loading");
     try {
       const userCredential = await FirebaseAuthService.login(email, password);
-      // const user = userCredential;
       if (!userCredential.emailVerified) {
         Alert.alert(
           "Email not verified",
