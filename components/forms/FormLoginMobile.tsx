@@ -21,6 +21,7 @@ import {
 
 import { AuthContext } from "../../contexts/AuthContext";
 import { FirebaseFirestoreService } from "../../services/firestore/FirebaseFirestoreService";
+import { FirebaseAuthService } from "../../services/auth/FirebaseAuthService";
 import {
   useDebouncedValidation,
   validateEmail,
@@ -92,12 +93,9 @@ const FormLoginMobile = () => {
   const handleLogin = async () => {
     setStatus("loading");
     try {
-      const userCredential = await auth().signInWithEmailAndPassword(
-        email,
-        password
-      );
-      const user = userCredential.user;
-      if (!user.emailVerified) {
+      const userCredential = await FirebaseAuthService.login(email, password);
+      // const user = userCredential;
+      if (!userCredential.emailVerified) {
         Alert.alert(
           "Email not verified",
           "Please verify your email before logging in."
@@ -111,10 +109,14 @@ const FormLoginMobile = () => {
 
       // Save user to Firestore
       try {
-        await FirebaseFirestoreService.saveUserToFirestoreMobile(user);
+        await FirebaseFirestoreService.saveUserToFirestoreMobile(
+          userCredential as FirebaseAuthTypes.User
+        );
 
         const details =
-          await FirebaseFirestoreService.getUserDetailsFromFirestore(user.uid);
+          await FirebaseFirestoreService.getUserDetailsFromFirestore(
+            userCredential.uid
+          );
         setUserDetails(details);
       } catch (error: any) {
         console.error("Error saving user: ", error.message);
