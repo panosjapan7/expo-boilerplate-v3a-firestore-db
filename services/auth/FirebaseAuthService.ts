@@ -17,12 +17,7 @@ interface AuthService {
   login(email: string, password: string): Promise<User>;
   register(email: string, password: string): Promise<User>;
   logout(): Promise<void>;
-  getCurrentUser(): User | null;
 }
-
-const mapFirebaseUserToUser = (
-  firebaseUser: FirebaseUserWeb | FirebaseAuthTypes.User
-): User => firebaseUser;
 
 const login = async (email: string, password: string) => {
   if (Platform.OS === "web") {
@@ -66,15 +61,8 @@ const logout = async (): Promise<void> => {
   }
 };
 
-const getCurrentUser = (): User | null => {
-  const firebaseUser =
-    Platform.OS === "web" ? webAuth.currentUser : auth().currentUser;
-  return firebaseUser ? mapFirebaseUserToUser(firebaseUser) : null;
-};
-
 export const FirebaseAuthService: AuthService = {
   login,
   register,
   logout,
-  getCurrentUser,
 };
