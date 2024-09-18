@@ -51,6 +51,7 @@ const UserDisplayNameMobile = ({
             placeholder={userDetails?.displayName ?? ""}
             value={newDisplayName}
             onChangeText={setNewDisplayName}
+            style={[globalStyles.border, { width: "auto", minWidth: 100 }]}
           />
           <Pressable onPress={() => handleDisplayNameUpdate(newDisplayName)}>
             <Text style={{ color: "red" }}>Update</Text>
