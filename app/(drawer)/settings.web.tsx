@@ -9,7 +9,7 @@ import { useGlobalStyles } from "../../styles/stylesheets/globalStyles";
 import { handleDeleteAccount } from "../../hooks/accountActionsWeb";
 import FormReauthenticationWeb from "../../components/forms/FormReauthenticationWeb";
 import LoadingIndicator from "../../components/indicators/LoadingIndicator";
-import { getUserDetailsFromFirestore } from "../../hooks/getUserDetailsFromFirestore";
+import { FirebaseFirestoreService } from "../../services/firestore/FirebaseFirestoreService";
 import UserRolesWeb from "../../components/settings/UserRolesWeb";
 import UserDisplayNameWeb from "../../components/settings/UserDisplayNameWeb";
 
@@ -24,7 +24,8 @@ const Settings = () => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       if (user) {
-        const details = await getUserDetailsFromFirestore(user.uid);
+        const details =
+          await FirebaseFirestoreService.getUserDetailsFromFirestore(user.uid);
         setUserDetails(details);
       }
     };

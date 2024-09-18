@@ -5,7 +5,7 @@ import useAuthRedirect from "../../../hooks/useAuthRedirect";
 import { AuthContext } from "../../../contexts/AuthContext";
 import "../../../styles/css/feed.css";
 import { useGlobalStyles } from "../../../styles/stylesheets/globalStyles";
-import { getUserDetailsFromFirestore } from "../../../hooks/getUserDetailsFromFirestore";
+import { FirebaseFirestoreService } from "../../../services/firestore/FirebaseFirestoreService";
 
 const Feed = () => {
   const authRedirect = useAuthRedirect();
@@ -15,7 +15,8 @@ const Feed = () => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       if (user) {
-        const details = await getUserDetailsFromFirestore(user.uid);
+        const details =
+          await FirebaseFirestoreService.getUserDetailsFromFirestore(user.uid);
         setUserDetails(details);
       }
     };

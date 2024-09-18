@@ -1,9 +1,9 @@
 // ./components/settings/UserRolesWeb.tsx
 import { useContext, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
-import { getUserDetailsFromFirestore } from "../../hooks/getUserDetailsFromFirestore";
 import { useGlobalStyles } from "../../styles/stylesheets/globalStyles";
 import { updateFirestore } from "../../hooks/updateFirestore";
+import { FirebaseFirestoreService } from "../../services/firestore/FirebaseFirestoreService";
 
 const UserRolesWeb = ({
   setStatus,
@@ -27,7 +27,8 @@ const UserRolesWeb = ({
           value: role,
           action: action,
         });
-        const updatedDetails = await getUserDetailsFromFirestore(user.uid);
+        const updatedDetails =
+          await FirebaseFirestoreService.getUserDetailsFromFirestore(user.uid);
         setUserDetails(updatedDetails);
         setSelectedRole("");
       } catch (error: any) {

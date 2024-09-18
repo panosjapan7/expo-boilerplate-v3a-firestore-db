@@ -4,8 +4,8 @@ import { Pressable, Text, TextInput, View } from "react-native";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useGlobalStyles } from "../../styles/stylesheets/globalStyles";
 import { updateFirestore } from "../../hooks/updateFirestore";
-import { getUserDetailsFromFirestore } from "../../hooks/getUserDetailsFromFirestore";
 import Spacer from "../utils/Spacer";
+import { FirebaseFirestoreService } from "../../services/firestore/FirebaseFirestoreService";
 
 const UserDisplayNameMobile = ({
   setStatus,
@@ -27,7 +27,8 @@ const UserDisplayNameMobile = ({
           value: newValue,
           action: "update",
         });
-        const updatedDetails = await getUserDetailsFromFirestore(user.uid);
+        const updatedDetails =
+          await FirebaseFirestoreService.getUserDetailsFromFirestore(user.uid);
         setUserDetails(updatedDetails);
         setNewDisplayName("");
       } catch (error: any) {
