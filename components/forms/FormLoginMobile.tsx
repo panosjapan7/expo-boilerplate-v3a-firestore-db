@@ -20,7 +20,7 @@ import {
 } from "@react-native-google-signin/google-signin";
 
 import { AuthContext } from "../../contexts/AuthContext";
-import { saveUserToFirestoreMobile } from "../../hooks/saveUserToFirestore";
+import { FirebaseFirestoreService } from "../../services/firestore/FirebaseFirestoreService";
 import {
   useDebouncedValidation,
   validateEmail,
@@ -34,7 +34,6 @@ import InputLabelMobile from "../inputs/InputLabelMobile";
 import ButtonSubmitFormMobile from "../buttons/ButtonSubmitFormMobile";
 import LoadingIndicator from "../indicators/LoadingIndicator";
 import Spacer from "../utils/Spacer";
-import { getUserDetailsFromFirestore } from "../../hooks/getUserDetailsFromFirestore";
 
 const FormLoginMobile = () => {
   const { user, setUser, setUserDetails } = useContext(AuthContext);
@@ -74,7 +73,7 @@ const FormLoginMobile = () => {
 
       // Save user to Firestore
       try {
-        await saveUserToFirestoreMobile(user);
+        await FirebaseFirestoreService.saveUserToFirestoreMobile(user);
       } catch (error: any) {
         console.error("Error saving user: ", error.message);
       }
@@ -112,9 +111,10 @@ const FormLoginMobile = () => {
 
       // Save user to Firestore
       try {
-        await saveUserToFirestoreMobile(user);
+        await FirebaseFirestoreService.saveUserToFirestoreMobile(user);
 
-        const details = await getUserDetailsFromFirestore(user.uid);
+        const details =
+          await FirebaseFirestoreService.getUserDetailsFromFirestore(user.uid);
         setUserDetails(details);
       } catch (error: any) {
         console.error("Error saving user: ", error.message);
