@@ -73,20 +73,6 @@ const getCurrentUser = (): User | null => {
   return firebaseUser ? mapFirebaseUserToUser(firebaseUser) : null;
 };
 
-const onAuthStateChanged = (
-  callback: (user: User | null) => void
-): (() => void) => {
-  if (Platform.OS === "web") {
-    return webOnAuthStateChanged(webAuth, (firebaseUser) => {
-      callback(firebaseUser ? mapFirebaseUserToUser(firebaseUser) : null);
-    });
-  } else {
-    return auth().onAuthStateChanged((firebaseUser) => {
-      callback(firebaseUser ? mapFirebaseUserToUser(firebaseUser) : null);
-    });
-  }
-};
-
 export const FirebaseAuthService: AuthService = {
   login,
   register,
