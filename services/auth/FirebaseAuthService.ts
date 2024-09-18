@@ -9,15 +9,8 @@ import {
   onAuthStateChanged as webOnAuthStateChanged,
   User as FirebaseUserWeb,
 } from "firebase/auth";
-
 import { webAuth } from "../../firebase/firebaseConfig";
 
-// interface User {
-//   uid: string;
-//   email: string | null;
-//   displayName: string | null;
-//   photoURL: string | null;
-// }
 type User = FirebaseUserWeb | FirebaseAuthTypes.User;
 
 interface AuthService {
