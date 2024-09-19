@@ -23,7 +23,6 @@ body {
   font-family: var(--font-family-regular);
   font-weight: var(--font-weight-regular);
   overflow-y: auto; /* Enables vertical scrolling when needed */
-  overflow-x: hidden; /* Prevents horizontal scrolling */
 }
 
 a {
