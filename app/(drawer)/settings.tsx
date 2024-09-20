@@ -14,6 +14,7 @@ import LoadingIndicator from "../../components/indicators/LoadingIndicator";
 import Spacer from "../../components/utils/Spacer";
 import UserRolesMobile from "../../components/settings/UserRolesMobile";
 import UserDisplayNameMobile from "../../components/settings/UserDisplayNameMobile";
+import FormUpdatePasswordMobile from "../../components/forms/FormUpdatePasswordMobile";
 
 const Settings = () => {
   const authRedirect = useAuthRedirect();
@@ -21,6 +22,7 @@ const Settings = () => {
   const [status, setStatus] = useState<StatusType>("idle");
   const [showReauthenticationModal, setShowReauthenticationModal] =
     useState(false);
+  const [showUpdatePasswordModal, setShowUpdatePasswordModal] = useState(false);
 
   if (authRedirect) {
     return authRedirect;
@@ -36,6 +38,10 @@ const Settings = () => {
           <Spacer marginBottom={20} />
           <UserRolesMobile setStatus={setStatus} />
           <Spacer marginBottom={20} />
+          <Pressable onPress={() => setShowUpdatePasswordModal(true)}>
+            <Text style={globalStyles.textMedium}>Update Password</Text>
+          </Pressable>
+          <Spacer marginBottom={20} />
           <Pressable
             onPress={() => handleDeleteAccount(setShowReauthenticationModal)}
           >
@@ -43,6 +49,15 @@ const Settings = () => {
           </Pressable>
         </View>
       )}
+
+      <FormUpdatePasswordMobile
+        visible={showUpdatePasswordModal}
+        onCancel={() => {
+          setShowUpdatePasswordModal(false);
+        }}
+        setStatus={setStatus}
+        setShowUpdatePasswordModal={setShowUpdatePasswordModal}
+      />
 
       <FormReauthenticationMobile
         visible={showReauthenticationModal}

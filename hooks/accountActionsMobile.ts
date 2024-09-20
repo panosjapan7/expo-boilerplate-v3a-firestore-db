@@ -79,3 +79,48 @@ export const reauthenticateWithEmailPassword = async (
     console.error("Reauthentication failed:", error);
   }
 };
+
+export const updateUserPassword = async (
+  currentPassword: string,
+  newPassword: string,
+  setMessage: (message: string) => void
+  // setSuccessMessage: (message: string) => void
+) => {
+  setMessage("");
+  // setSuccessMessage("");
+
+  const currentUser = auth().currentUser;
+
+  if (currentUser && currentUser.email) {
+    try {
+      // First, re-authenticate the user
+      const credential = auth.EmailAuthProvider.credential(
+        currentUser.email,
+        currentPassword
+      );
+      await currentUser.reauthenticateWithCredential(credential);
+
+      // Then, update the password
+      await currentUser.updatePassword(newPassword);
+      console.log("Password updated successfully");
+      // setSuccessMessage("Password updated successfully");
+      setMessage("Password updated successfully");
+    } catch (error: any) {
+      if (error.code === "auth/wrong-password") {
+        console.error("Current password is incorrect");
+        console.log("Before setting message");
+        setMessage("Current password is incorrect");
+        console.log("After setting message");
+      } else {
+        console.error("Error updating password: ", error.message);
+        console.log("Before setting message");
+        setMessage(`Error updating password: ${error.message}`);
+        console.log("After setting message");
+      }
+    }
+  } else {
+    console.error("No user is currently signed in or user email is missing");
+    setMessage("No user is currently signed in or user email is missing");
+    throw new Error("No user is currently signed in or user email is missing");
+  }
+};
