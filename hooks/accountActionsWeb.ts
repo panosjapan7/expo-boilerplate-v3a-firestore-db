@@ -4,6 +4,7 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   GoogleAuthProvider,
+  updatePassword,
 } from "firebase/auth";
 // @ts-ignore
 import { signInWithPopup } from "firebase/auth";
@@ -76,5 +77,48 @@ export const reauthenticateWithEmailPassword = async (
     }
   } catch (error: any) {
     console.error("Reauthentication failed:", error);
+  }
+};
+
+export const updateUserPassword = async (
+  currentPassword: string,
+  newPassword: string,
+  setErrorMessage: (message: string) => void,
+  setSuccessMessage: (message: string) => void
+) => {
+  setErrorMessage("");
+  setSuccessMessage("");
+  const auth = getAuth();
+  const currentUser = auth.currentUser;
+
+  if (currentUser && currentUser?.email) {
+    try {
+      // First, re-authenticate the user
+      const credential = EmailAuthProvider.credential(
+        currentUser.email,
+        currentPassword
+      );
+      await reauthenticateWithCredential(currentUser, credential);
+      // Then, update the password
+      await updatePassword(currentUser, newPassword);
+      console.log("Password updated successfully");
+      setSuccessMessage("Password updated successfully");
+    } catch (error: any) {
+      if (error.code === "auth/invalid-credential") {
+        console.error("Current password is incorrect");
+        console.log("Before setting message");
+        setErrorMessage("Current password is incorrect");
+        console.log("After setting message");
+      } else {
+        console.error("Error updating password: ", error.message);
+        console.log("Before setting message");
+        setErrorMessage(`Error updating password: ${error.message}`);
+        console.log("After setting message");
+      }
+    }
+  } else {
+    console.error("No user is currently signed in or user email is missing");
+    setErrorMessage("No user is currently signed in or user email is missing");
+    throw new Error("No user is currently signed in or user email is missing");
   }
 };

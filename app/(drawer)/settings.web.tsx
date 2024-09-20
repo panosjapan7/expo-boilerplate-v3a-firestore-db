@@ -12,6 +12,7 @@ import LoadingIndicator from "../../components/indicators/LoadingIndicator";
 import { FirebaseFirestoreService } from "../../services/firestore/FirebaseFirestoreService";
 import UserRolesWeb from "../../components/settings/UserRolesWeb";
 import UserDisplayNameWeb from "../../components/settings/UserDisplayNameWeb";
+import FormUpdatePasswordWeb from "../../components/forms/FormUpdatePasswordWeb";
 
 const Settings = () => {
   const authRedirect = useAuthRedirect();
@@ -20,6 +21,7 @@ const Settings = () => {
   const [status, setStatus] = useState<StatusType>("idle");
   const [showReauthenticationForm, setShowReauthenticationForm] =
     useState(false);
+  const [showUpdatePasswordForm, setShowUpdatePasswordForm] = useState(false);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -47,6 +49,21 @@ const Settings = () => {
             <p style={{ color: themeTextColor }}>Settings Screen (web)</p>
             <UserDisplayNameWeb setStatus={setStatus} />
             <UserRolesWeb setStatus={setStatus} />
+
+            <p
+              className="settings-link textMedium"
+              onClick={() => setShowUpdatePasswordForm(true)}
+              style={{ color: themeTextColor }}
+            >
+              Update Password
+            </p>
+            {showUpdatePasswordForm ? (
+              <FormUpdatePasswordWeb
+                visible={showUpdatePasswordForm}
+                onCancel={() => setShowUpdatePasswordForm(false)}
+                setShowUpdatePasswordForm={setShowUpdatePasswordForm}
+              />
+            ) : null}
             <p
               className="settings-link textMedium"
               onClick={() => handleDeleteAccount(setShowReauthenticationForm)}
