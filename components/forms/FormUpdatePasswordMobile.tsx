@@ -16,6 +16,7 @@ import {
   useDebouncedValidation,
   validatePassword,
 } from "../../hooks/validations";
+import { updateUserPassword } from "../../hooks/accountActionsMobile";
 import { StatusType } from "../../types/types";
 import { useGlobalStyles } from "../../styles/stylesheets/globalStyles";
 import Spacer from "../utils/Spacer";
@@ -23,7 +24,6 @@ import InputLabelMobile from "../inputs/InputLabelMobile";
 import InputPasswordMobile from "../inputs/InputPasswordMobile";
 import LoadingIndicator from "../indicators/LoadingIndicator";
 import ButtonSubmitFormMobile from "../buttons/ButtonSubmitFormMobile";
-import { updateUserPassword } from "../../hooks/accountActionsMobile";
 
 type FormUpdatePasswordMobileType = {
   visible: boolean;
@@ -46,12 +46,18 @@ const FormUpdatePasswordMobile = ({
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [status, setStatus] = useState<StatusType>("idle");
   const newPasswordInputRef = useRef<TextInput>(null);
-  const [message, setMessage] = useState("");
+  const [successUIMessage, setSuccessUIMessage] = useState("");
+  const [errorUIMessage, setErrorUIMessage] = useState("");
 
   const handleUpdatePassword = async () => {
     setStatus("loading");
     try {
-      await updateUserPassword(currentPassword, newPassword, setMessage);
+      await updateUserPassword(
+        currentPassword,
+        newPassword,
+        setSuccessUIMessage,
+        setErrorUIMessage
+      );
       //   setShowUpdatePasswordModal(false);
     } catch (error: any) {
       console.log("Error: ", error);
@@ -63,6 +69,8 @@ const FormUpdatePasswordMobile = ({
   const handleCancel = () => {
     setCurrentPassword("");
     setNewPassword("");
+    setSuccessUIMessage("");
+    setErrorUIMessage("");
     onCancel();
   };
 
@@ -90,7 +98,20 @@ const FormUpdatePasswordMobile = ({
             <View style={globalStyles.container}>
               <Text style={globalStyles.textBold}>Update Password</Text>
               <Spacer marginVertical={10} />
-              <Text>{message}</Text>
+              {successUIMessage ? (
+                <Text
+                  style={{ color: "green", width: "90%", textAlign: "center" }}
+                >
+                  {successUIMessage}
+                </Text>
+              ) : null}
+              {errorUIMessage ? (
+                <Text
+                  style={{ color: "red", width: "90%", textAlign: "center" }}
+                >
+                  {errorUIMessage}
+                </Text>
+              ) : null}
               <Spacer marginVertical={10} />
               <InputLabelMobile caption="Current Password" />
               <InputPasswordMobile

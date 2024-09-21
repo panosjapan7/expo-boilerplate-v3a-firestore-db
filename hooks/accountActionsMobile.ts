@@ -83,11 +83,11 @@ export const reauthenticateWithEmailPassword = async (
 export const updateUserPassword = async (
   currentPassword: string,
   newPassword: string,
-  setMessage: (message: string) => void
-  // setSuccessMessage: (message: string) => void
+  setSuccessUIMessage: (message: string) => void,
+  setErrorUIMessage: (message: string) => void
 ) => {
-  setMessage("");
-  // setSuccessMessage("");
+  setSuccessUIMessage("");
+  setErrorUIMessage("");
 
   const currentUser = auth().currentUser;
 
@@ -103,24 +103,21 @@ export const updateUserPassword = async (
       // Then, update the password
       await currentUser.updatePassword(newPassword);
       console.log("Password updated successfully");
-      // setSuccessMessage("Password updated successfully");
-      setMessage("Password updated successfully");
+      setSuccessUIMessage("Password updated successfully");
     } catch (error: any) {
-      if (error.code === "auth/wrong-password") {
+      if (error.code === "auth/invalid-credential") {
         console.error("Current password is incorrect");
-        console.log("Before setting message");
-        setMessage("Current password is incorrect");
-        console.log("After setting message");
+        setErrorUIMessage("Current password is incorrect");
       } else {
-        console.error("Error updating password: ", error.message);
-        console.log("Before setting message");
-        setMessage(`Error updating password: ${error.message}`);
-        console.log("After setting message");
+        console.log("error from else: ", error.message);
+        setErrorUIMessage(`Error updating password: ${error.message}`);
       }
     }
   } else {
     console.error("No user is currently signed in or user email is missing");
-    setMessage("No user is currently signed in or user email is missing");
+    setErrorUIMessage(
+      "No user is currently signed in or user email is missing"
+    );
     throw new Error("No user is currently signed in or user email is missing");
   }
 };
