@@ -1,5 +1,4 @@
 // ./components/forms/FormUpdatePasswordWeb.tsx
-
 import { useEffect, useState } from "react";
 import { useGlobalStyles } from "../../styles/stylesheets/globalStyles";
 import { StatusType } from "../../types/types";
