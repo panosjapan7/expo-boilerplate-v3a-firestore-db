@@ -18,6 +18,7 @@
 - [x] Delete Authenticated User's Firestore User Data
 - [x] Update Authenticated User's Firestore User Data
 - [x] Update Authenticated User's Firebase Auth Password
+- [x] Query Firestore User Documents
 - [x] Offline Persistence: Get Firestore Data While Offline
 
 </details>
