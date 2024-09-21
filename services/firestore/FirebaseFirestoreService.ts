@@ -9,10 +9,13 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  getDocs,
   getFirestore,
+  query,
   serverTimestamp,
   setDoc,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import firestore from "@react-native-firebase/firestore";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
@@ -68,6 +71,29 @@ const getUserDetailsFromFirestore = async (uid: string): Promise<any> => {
   } else {
     const docSnap = await firestore().collection("users").doc(uid).get();
     return docSnap.exists ? docSnap.data() : null;
+  }
+};
+
+const getUsersByRole = async (role: string) => {
+  if (Platform.OS === "web") {
+    if (!webFirestore) {
+      throw new Error("Firestore is not initialized for web.");
+    }
+
+    const usersRef = collection(webFirestore, "users");
+    const q = query(usersRef, where("role", "array-contains", role));
+    const querySnapshot = await getDocs(q);
+
+    const users = querySnapshot.docs.map((doc) => doc.data());
+    return users;
+  } else {
+    const userRef = firestore().collection("users");
+    const querySnapshot = await userRef
+      .where("role", "array-contains", role)
+      .get();
+
+    const users = querySnapshot.docs.map((doc) => doc.data());
+    return users;
   }
 };
 
@@ -234,6 +260,7 @@ const saveUserToFirestoreMobile = async (
 
 export const FirebaseFirestoreService = {
   deleteFirebaseUser,
+  getUsersByRole,
   saveUserToFirestoreMobile,
   saveUserToFirestoreWeb,
   getUserDetailsFromFirestore,
