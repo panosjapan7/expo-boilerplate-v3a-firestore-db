@@ -1,8 +1,10 @@
 // ./components/users/UserListMobile.tsx
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
+
 import { FirebaseFirestoreService } from "../../services/firestore/FirebaseFirestoreService";
 import { UserDetailsType } from "../../types/databaseTypes";
+import { useGlobalStyles } from "../../styles/stylesheets/globalStyles";
 
 type UserListMobileType = {
   role: string;
@@ -11,6 +13,7 @@ type UserListMobileType = {
 
 const UserListMobile = ({ role, userDetails }: UserListMobileType) => {
   const [users, setUsers] = useState<Partial<UserDetailsType>[]>([]);
+  const { themeTextColor } = useGlobalStyles();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -32,15 +35,17 @@ const UserListMobile = ({ role, userDetails }: UserListMobileType) => {
 
   return (
     <View>
-      <Text>Users with role: {role}</Text>
+      <Text style={{ color: themeTextColor }}>Users with role: {role}</Text>
       {users.length > 0 ? (
         users.map((user, index) => (
-          <Text key={index}>
+          <Text key={index} style={{ color: themeTextColor }}>
             {index + 1}. {user.email}
           </Text>
         ))
       ) : (
-        <Text>No users found with role "{role}"</Text>
+        <Text style={{ color: themeTextColor }}>
+          No users found with role "{role}"
+        </Text>
       )}
     </View>
   );
