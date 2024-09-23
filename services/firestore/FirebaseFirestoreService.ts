@@ -5,15 +5,18 @@ import {
   User as FirebaseUserWeb,
 } from "firebase/auth";
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
   getDoc,
   getDocs,
   getFirestore,
+  orderBy,
   query,
   serverTimestamp,
   setDoc,
+  Timestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -23,7 +26,60 @@ import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { webFirestore } from "../../firebase/firebaseConfig";
 import { AuthProviderType, UserDetailsType } from "../../types/databaseTypes";
 
+type MessageType = {
+  content: string;
+  createdAt: Timestamp;
+  userId: string;
+  senderName: string;
+};
+
 type User = FirebaseUserWeb | FirebaseAuthTypes.User;
+
+const addMessageToUser = async (
+  userId: string,
+  message: Omit<MessageType, "createdAt">
+) => {
+  if (Platform.OS === "web") {
+    if (!webFirestore) {
+      throw new Error("Firestore is not initialized for web.");
+    }
+
+    const userDocRef = doc(webFirestore, "users", userId);
+    const messagesCollectionRef = collection(userDocRef, "messages");
+    await addDoc(messagesCollectionRef, {
+      ...message,
+      createdAt: serverTimestamp(),
+    });
+  } else {
+    const userDocRef = firestore().collection("users").doc(userId);
+    await userDocRef.collection("messages").add({
+      ...message,
+      createdAt: firestore.FieldValue.serverTimestamp(),
+    });
+  }
+};
+
+const getUserMessages = async (userId: string): Promise<MessageType[]> => {
+  if (Platform.OS === "web") {
+    if (!webFirestore) {
+      throw new Error("Firestore is not initialized for web.");
+    }
+    const userDocRef = doc(webFirestore, "users", userId);
+    const messagesCollectionRef = collection(userDocRef, "messages");
+    const q = query(messagesCollectionRef, orderBy("createdAt", "asc"));
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.docs.map((doc) => doc.data() as MessageType);
+  } else {
+    const userDocRef = firestore().collection("users").doc(userId);
+    const querySnapshot = await userDocRef
+      .collection("messages")
+      .orderBy("createdAt", "asc")
+      .get();
+
+    return querySnapshot.docs.map((doc) => doc.data() as MessageType);
+  }
+};
 
 const deleteFirebaseUser = async (
   currentUser: FirebaseUserWeb | FirebaseAuthTypes.User
@@ -259,6 +315,8 @@ const saveUserToFirestoreMobile = async (
 };
 
 export const FirebaseFirestoreService = {
+  addMessageToUser,
+  getUserMessages,
   deleteFirebaseUser,
   getUsersByRole,
   saveUserToFirestoreMobile,

@@ -19,6 +19,7 @@
 - [x] Update Authenticated User's Firestore User Data
 - [x] Update Authenticated User's Firebase Auth Password
 - [x] Query Firestore User Documents
+- [x] Firestore Sub-Collections ('users' collection has 'messages' sub-collection)
 - [x] Offline Persistence: Get Firestore Data While Offline
 
 </details>
