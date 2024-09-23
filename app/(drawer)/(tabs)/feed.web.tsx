@@ -9,6 +9,7 @@ import { FirebaseFirestoreService } from "../../../services/firestore/FirebaseFi
 import { StatusType } from "../../../types/types";
 import UserListWeb from "../../../components/users/UserListWeb";
 import LoadingIndicator from "../../../components/indicators/LoadingIndicator";
+import UserMessagesWeb from "../../../components/users/UserMessagesWeb";
 
 const Feed = () => {
   const authRedirect = useAuthRedirect();
@@ -52,6 +53,7 @@ const Feed = () => {
             {userDetails?.role.includes("Admin") ? (
               <UserListWeb role="Member" userDetails={userDetails} />
             ) : null}
+            {user ? <UserMessagesWeb userId={user.uid} /> : null}
           </div>
         </div>
       )}
